@@ -1,0 +1,178 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  .homepage {
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .hero {
+    position: relative;
+    width: 100%;
+    height: 60vh;
+    overflow: hidden;
+  }
+  
+  .hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.5s ease;
+  }
+  
+  .hero-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+  }
+  
+  .hero h1 {
+    font-size: 3em;
+    margin-bottom: 10px;
+  }
+  
+  .hero p {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+  }
+  
+  .cta-btn {
+    padding: 10px 20px;
+    font-size: 1.2em;
+    background-color: #ff6600;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .cta-btn:hover {
+    background-color: #e65c00;
+  }
+  
+  .slide-controls {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .prev-btn, .next-btn {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  /* Recommendations Section */
+  .recommendations {
+    padding: 50px 20px;
+    text-align: center;
+  }
+  
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 85px;
+  }
+  
+  .card img {
+    width: 100%;
+    height: 70%;
+    border-radius: 10px;
+  }
+  
+  .view-more-btn {
+    padding: 10px 20px;
+    background-color: #ff6600;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .view-more-btn:hover {
+    background-color: #e65c00;
+  }
+  
+  /* Services Section */
+  .services {
+    background-color: #f9f9f9;
+    padding: 50px 20px;
+    text-align: center;
+  }
+  
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  
+  .service-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .service-icon {
+    font-size: 3em;
+    margin-bottom: 20px;
+  }
+  
+  /* Testimonials Section */
+  .testimonials {
+    padding: 50px 20px;
+    background-color: #f1f1f1;
+  }
+  
+  .testimonials-slider {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    overflow: hidden;
+  }
+  
+  .testimonial {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    text-align: center;
+  }
+  
+  .rating {
+    color: #ff6600;
+    font-size: 1.5em;
+  }
+  
+  @media (max-width: 768px) {
+    .hero-overlay h1 {
+      font-size: 2em;
+    }
+  
+    .recommendations .cards {
+      grid-template-columns: 1fr;
+    }
+  
+    .services-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .testimonials-slider {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+  
