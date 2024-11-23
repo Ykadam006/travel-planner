@@ -4,9 +4,9 @@ import './HomePage.css';
 const HomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const heroImages = [
-    'https://images.unsplash.com/photo-1558005137-d9619a5c539f?q=80&w=2971&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    'https://images.unsplash.com/photo-1495017790122-c765562a8917?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    'https://images.unsplash.com/photo-1557409518-691ebcd96038?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    'https://images.unsplash.com/photo-1493988577905-2fa4018652be?q=80&w=2971&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    'https://images.unsplash.com/photo-1495819001850-6c67d73d1b1e?q=80&w=2967&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    'https://images.unsplash.com/photo-1499561385668-5ebdb06a79bc?q=80&w=2969&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   ];
 
   const recommendations = [
@@ -61,7 +61,7 @@ const HomePage = () => {
         <img src={heroImages[currentSlide]} alt="Travel Destination" className="hero-img" />
         <div className="hero-overlay">
           <h1>Explore the World with Ghumakkad</h1>
-          <p>Your next adventure awaits</p>
+          <p>__________________________________</p>
           <button className="cta-btn">Plan Your Trip</button>
           <div className="slide-controls">
             <button className="prev-btn" onClick={handlePrevSlide}>❮</button>

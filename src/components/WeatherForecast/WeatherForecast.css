@@ -1,85 +1,107 @@
+/* General styles for the weather container */
 .weather-forecast {
-    padding: 20px;
-    font-family: 'Arial', sans-serif;
-    max-width: 900px;
-    margin: auto;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  max-width: 900px;
+  margin: auto;
+  transition: background-color 0.5s ease; /* Smooth background transition */
+}
+
+.weather-forecast.sunny {
+  background-color: #ffe066; /* Sunny background */
+  animation: fadeIn 2s ease-in-out;
+}
+
+.weather-forecast.rainy {
+  background-color: #80d0ff; /* Rainy background */
+  animation: fadeIn 2s ease-in-out;
+}
+
+.weather-forecast.cloudy {
+  background-color: #d3d3d3; /* Cloudy background */
+  animation: fadeIn 2s ease-in-out;
+}
+
+/* Styling for the title */
+.weather-title {
+  text-align: center;
+  color: #243e36;
+  animation: fadeIn 2s ease-in-out;
+}
+
+/* Styling for the input field */
+.weather-input {
+  margin-right: 10px;
+  padding: 8px;
+  border: 1px solid #7ca982;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+}
+
+.weather-input:focus {
+  border-color: #5c8b64; /* Focused input border color */
+}
+
+/* Styling for the search button */
+.weather-button {
+  background-color: #7ca982;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.weather-button:hover {
+  background-color: #5c8b64;
+}
+
+/* Error message styling */
+.error {
+  color: red;
+  margin-top: 10px;
+}
+
+/* Styling for the weather information section */
+.weather-info {
+  margin-top: 20px;
+  animation: fadeIn 2s ease-in-out;
+}
+
+/* Styling for the current weather section */
+.current-weather {
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 1.5s ease-in-out;
+}
+
+/* Fade-in animation for the elements */
+.fade-in {
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
   }
-  
-  h1 {
-    color: #243e36;
+  100% {
+    opacity: 1;
   }
-  
-  input {
-    margin-right: 10px;
-    padding: 8px;
-    border: 1px solid #7ca982;
-    border-radius: 4px;
-  }
-  
-  button {
-    background-color: #7ca982;
-    color: white;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #5c8b64;
-  }
-  
-  .error {
-    color: red;
-    margin-top: 10px;
-  }
-  
+}
+
+/* Hover effects for weather data */
+.current-weather p:hover {
+  color: #5c8b64;
+  cursor: pointer;
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+}
+
+/* Adjust the layout for mobile responsiveness */
+@media (max-width: 600px) {
   .weather-info {
-    margin-top: 20px;
-  }
-  
-  .weather-info.sunny {
-    background-color: #ffed91;
-  }
-  
-  .weather-info.rainy {
-    background-color: #a0c4ff;
-  }
-  
-  .weather-info.cloudy {
-    background-color: #d3d3d3;
-  }
-  
-  .current-weather {
     padding: 10px;
-    border-radius: 4px;
   }
-  
-  .forecast-scroll {
-    display: flex;
-    overflow-x: auto;
-    gap: 10px;
-    padding: 10px 0;
-  }
-  
-  .forecast-card {
-    background-color: white;
-    border-radius: 4px;
-    border: 1px solid #e0eec6;
-    padding: 10px;
-    text-align: center;
-    min-width: 150px;
-    flex-shrink: 0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
-  }
-  
-  .forecast-card:hover {
-    transform: scale(1.05);
-  }
-  
-  .forecast-card img {
-    width: 50px;
-    height: 50px;
-  }
-  
+}

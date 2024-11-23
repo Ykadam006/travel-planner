@@ -1,91 +1,79 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './WeatherForecast.css';
-import { FaTemperatureHigh, FaWind, FaTint } from 'react-icons/fa';
+import { FaTemperatureHigh, FaWind, FaTint, FaCloudSun, FaCloudRain, FaSnowflake } from 'react-icons/fa';
 
 const WeatherForecast = () => {
   const [location, setLocation] = useState('');
   const [weatherData, setWeatherData] = useState(null);
   const [error, setError] = useState('');
 
-  const API_KEY = process.env.REACT_APP_WEATHER_API_KEY; // Use environment variable
+  const API_KEY = '8fd8ed51284e42978ea222605242311'; // Replace with your WeatherAPI key
 
-  const fetchWeatherData = (lat, lon) => {
+  // Function to fetch current weather data based on city
+  const fetchWeatherData = (city) => {
     axios
-      .get(
-        `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely,alerts&units=metric&appid=${API_KEY}`
-      )
+      .get(`https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${city}`)
       .then((response) => {
-        setWeatherData(response.data);
-        setError('');
+        setWeatherData(response.data); // Store weather data
+        setError(''); // Clear any previous error
       })
       .catch(() => {
-        setError('Could not fetch weather data. Please try again.');
-        setWeatherData(null);
+        setError('Could not fetch weather data. Please try again.'); // Error handling
+        setWeatherData(null); // Reset weather data
       });
   };
 
+  // Function to handle search button click and fetch weather for entered location
   const handleSearch = () => {
-    axios
-      .get(
-        `https://api.openweathermap.org/geo/1.0/direct?q=${location}&limit=1&appid=${API_KEY}`
-      )
-      .then((response) => {
-        if (response.data.length > 0) {
-          const { lat, lon } = response.data[0];
-          fetchWeatherData(lat, lon);
-        } else {
-          setError('Location not found. Please enter a valid city name.');
-          setWeatherData(null);
-        }
-      })
-      .catch(() => {
-        setError('Could not fetch location data. Please try again.');
-        setWeatherData(null);
-      });
+    if (location.trim() === '') {
+      setError('Please enter a valid location'); // Validation for empty input
+      return;
+    }
+    fetchWeatherData(location); // Fetch weather for the provided city
   };
+
+  // Weather condition-based animation class
+  const weatherConditionClass = weatherData
+    ? weatherData.current.condition.text.toLowerCase().replace(' ', '-')
+    : '';
 
   return (
-    <div className="weather-forecast">
-      <h1>Weather Forecast</h1>
+    <div className={`weather-forecast ${weatherConditionClass}`}>
+      <h1 className="weather-title">Weather Forecast</h1>
       <input
         type="text"
         placeholder="Enter city"
         value={location}
-        onChange={(e) => setLocation(e.target.value)}
+        onChange={(e) => setLocation(e.target.value)} // Update location on input change
+        className="weather-input"
       />
-      <button onClick={handleSearch}>Get Weather</button>
-      {error && <div className="error">{error}</div>}
+      <button onClick={handleSearch} className="weather-button">
+        Get Weather
+      </button>
+      {error && <div className="error">{error}</div>} {/* Display error message if any */}
+
       {weatherData && (
-        <div
-          className={`weather-info ${weatherData.current.weather[0].main.toLowerCase()}`}
-        >
-          <h2>{location}</h2>
+        <div className="weather-info">
+          <h2 className="fade-in">{weatherData.location.name}</h2> {/* Display location name with fade-in */}
           <div className="current-weather">
             <h3>Current Weather</h3>
-            <p>
-              <FaTemperatureHigh /> {weatherData.current.temp}°C
+            <p className="fade-in">
+              <FaTemperatureHigh /> {weatherData.current.temp_c}°C {/* Temperature */}
             </p>
-            <p>
-              <FaTint /> Humidity: {weatherData.current.humidity}%
+            <p className="fade-in">
+              <FaTint /> Humidity: {weatherData.current.humidity}% {/* Humidity */}
             </p>
-            <p>
-              <FaWind /> Wind: {weatherData.current.wind_speed} m/s
+            <p className="fade-in">
+              <FaWind /> Wind: {weatherData.current.wind_kph} km/h {/* Wind speed */}
             </p>
-          </div>
-          <h3>5-Day Forecast</h3>
-          <div className="forecast-scroll">
-            {weatherData.daily.slice(0, 5).map((day, index) => (
-              <div key={index} className="forecast-card">
-                <p>Day {index + 1}</p>
-                <p>{day.temp.day}°C</p>
-                <img
-                  src={`https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`}
-                  alt="weather icon"
-                />
-                <p>{day.weather[0].description}</p>
-              </div>
-            ))}
+            <p className="fade-in">
+              <FaCloudSun /> Feels Like: {weatherData.current.feelslike_c}°C {/* Feels Like Temperature */}
+            </p>
+            <p className="fade-in">UV Index: {weatherData.current.uv}</p> {/* UV Index */}
+            <p className="fade-in">Pressure: {weatherData.current.pressure_mb} mb</p> {/* Pressure */}
+            <p className="fade-in">Wind Gust: {weatherData.current.gust_kph} km/h</p> {/* Wind Gust */}
+            <p>{weatherData.current.condition.text}</p> {/* Weather description */}
           </div>
         </div>
       )}

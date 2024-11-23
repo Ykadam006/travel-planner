@@ -27,22 +27,21 @@ const Navbar = () => {
             <Link to="/">Home</Link>
           </li>
           <li>
-            <Link to="/itinerary-builder">Itinerary </Link>
+            <Link to="/itinerary-builder">Itinerary</Link>
           </li>
           <li>
-            <Link to="/packing-list">Packing </Link>
+            <Link to="/packing-list">Packing</Link>
           </li>
           <li>
-            <Link to="/travel-suggestions"> Suggestions</Link>
+            <Link to="/travel-suggestions">Suggestions</Link>
           </li>
           <li>
-            <Link to="/budget-estimator">Budget </Link>
+            <Link to="/budget-estimator">Budget</Link>
           </li>
           <li>
-            <Link to="/weather-forecast">Weather </Link>
+            <Link to="/weather-forecast">Weather</Link>
           </li>
         </ul>
-       
       </Nav>
 
       <ResponsiveNav state={navbarState}>
@@ -90,54 +89,64 @@ const Nav = styled.nav`
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  background-color: transparent;
+  background-color: #f1faee; /* Changed navbar color to F1FAEE */
+  
   .brand {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    
     .container {
       font-size: 1.5rem;
       font-weight: bold;
-      color: #243e36;
+      color: #243e36; /* Ocean Blue */
     }
+    
     .toggle {
       display: none;
       font-size: 1.5rem;
       cursor: pointer;
     }
   }
+  
   .nav-links {
     display: flex;
     list-style: none;
     gap: 1.5rem;
+    
     li {
       a {
         text-decoration: none;
-        color: #243e36;
+        color: #243e36; /* Ocean Blue */
         font-size: 1rem;
         font-weight: 500;
-        transition: color 0.3s;
+        transition: color 0.3s, transform 0.2s ease;
+        
         &:hover {
-          color: #7ca982;
+          color: #156064; /* Seafoam Green */
+          transform: scale(1.1);
         }
       }
     }
   }
+
   button {
     padding: 0.5rem 1rem;
     font-size: 1rem;
     font-weight: bold;
     color: white;
-    background-color: #48cae4;
-    border: none;
+    background-color: #48cae4; /* Light blue */
+    border: none; /* Removed border */
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    
     &:hover {
-      background-color: #023e8a;
+      background-color: #023e8a; /* Darker blue on hover */
     }
   }
+  
   @media screen and (max-width: 768px) {
     .nav-links {
       display: none;
@@ -163,16 +172,20 @@ const ResponsiveNav = styled.div`
   height: 30vh;
   transition: all 0.3s ease;
   z-index: 10;
+  
   ul {
     list-style: none;
+    
     li {
       margin: 0.5rem 0;
+      
       a {
         text-decoration: none;
         font-size: 1.2rem;
-        color: #243e36;
+        color: #243e36; /* Ocean Blue */
+        
         &:hover {
-          color: #7ca982;
+          color: #7ca982; /* Seafoam Green */
         }
       }
     }
