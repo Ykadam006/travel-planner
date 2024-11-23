@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './WeatherForecast.css';
-import { FaTemperatureHigh, FaWind, FaTint, FaCloudSun, FaCloudRain, FaSnowflake } from 'react-icons/fa';
+import { FaTemperatureHigh, FaWind, FaTint, FaCloudSun} from 'react-icons/fa';
 
 const WeatherForecast = () => {
   const [location, setLocation] = useState('');
