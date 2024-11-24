@@ -44,11 +44,7 @@
    - Based on the trip’s details (duration, destination, activities), the app generates a suggested packing list, helping users stay organized.
    - Users can mark items as packed and add custom items to their lists.
 
-### 5. **Travel Suggestions Powered by API**
-   - The travel suggestions feature integrates third-party APIs to offer personalized travel recommendations based on the user's preferences (e.g., adventure, relaxation).
-   - Suggests destinations, attractions, and activities that match user interests, ensuring a unique experience.
-
-### 6. **Budget Estimator with Visuals**
+### 5. **Budget Estimator with Visuals**
    - Users can input their planned activities and destinations, and the app provides a budget estimate. 
    - Visual graphs display the budget distribution, showing users how their funds will be allocated (transportation, accommodation, activities, etc.).
      
@@ -96,8 +92,7 @@ Feel free to fork this repository and contribute. If you have any ideas for new 
 3. **Special Features**: Highlights unique functionalities that set your app apart, such as the dynamic itinerary builder, responsive design, and budget estimator with visualizations.
 4. **Installation**: A quick setup guide to help users or developers clone and run your project locally.
 5. **Contributing**: Instructions on how others can contribute to the project, along with guidelines for forking and submitting pull requests.
-6. **License**: Specifies the license under which your code is distributed (MIT in this case).
-7. **Contact**: Contact information and links to your professional accounts (GitHub, email, etc.).
+
 
 
 # Getting Started with Create React App
