@@ -40,7 +40,7 @@ const predefinedSuggestions = [
 const TravelSuggestions = () => {
   const [location, setLocation] = useState('');
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
-  const [error, setError] = useState('');
+  let error = '';
 
   // Randomly shuffle the predefined suggestions and select 10
   const randomSuggestions = predefinedSuggestions
