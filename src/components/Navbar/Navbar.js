@@ -1,193 +1,158 @@
 import React, { useState } from "react";
-import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { VscChromeClose } from "react-icons/vsc";
+import "./Navbar.css";
 
 const Navbar = () => {
-  const [navbarState, setNavbarState] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeLink, setActiveLink] = useState("/"); // State to track the active link
+
+  const toggleMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const handleLinkClick = (link) => {
+    setActiveLink(link); // Set the clicked link as active
+  };
 
   return (
-    <>
-      <Nav>
-        <div className="brand">
-          <div className="container">
-            <h1>Ghumakkad</h1>
-          </div>
-          <div className="toggle">
-            {navbarState ? (
-              <VscChromeClose onClick={() => setNavbarState(false)} />
-            ) : (
-              <GiHamburgerMenu onClick={() => setNavbarState(true)} />
-            )}
-          </div>
+    <nav className="navbar">
+      <div className="navbar-container">
+        {/* Logo */}
+        <div className="navbar-logo">
+          <Link to="/" onClick={() => handleLinkClick("/")}>
+            Ghumakkad
+          </Link>
         </div>
-        <ul className="nav-links">
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/itinerary-builder">Itinerary</Link>
-          </li>
-          <li>
-            <Link to="/packing-list">Packing</Link>
-          </li>
-          <li>
-            <Link to="/travel-suggestions">Suggestions</Link>
-          </li>
-          <li>
-            <Link to="/budget-estimator">Budget</Link>
-          </li>
-          <li>
-            <Link to="/weather-forecast">Weather</Link>
-          </li>
-        </ul>
-      </Nav>
 
-      <ResponsiveNav state={navbarState}>
-        <ul>
+        {/* Desktop Links */}
+        <ul className="navbar-links">
           <li>
-            <Link to="/" onClick={() => setNavbarState(false)}>
+            <Link
+              to="/"
+              onClick={() => handleLinkClick("/")}
+              className={activeLink === "/" ? "active" : ""}
+            >
               Home
             </Link>
           </li>
           <li>
-            <Link to="/itinerary-builder" onClick={() => setNavbarState(false)}>
-              Itinerary Builder
+            <Link
+              to="/itinerary-builder"
+              onClick={() => handleLinkClick("/itinerary-builder")}
+              className={activeLink === "/itinerary-builder" ? "active" : ""}
+            >
+              Plan Trip
             </Link>
           </li>
           <li>
-            <Link to="/packing-list" onClick={() => setNavbarState(false)}>
-              Packing List
+            <Link
+              to="/packing-list"
+              onClick={() => handleLinkClick("/packing-list")}
+              className={activeLink === "/packing-list" ? "active" : ""}
+            >
+              Packing
             </Link>
           </li>
           <li>
-            <Link to="/travel-suggestions" onClick={() => setNavbarState(false)}>
-              Travel Suggestions
+            <Link
+              to="/travel-suggestions"
+              onClick={() => handleLinkClick("/travel-suggestions")}
+              className={activeLink === "/travel-suggestions" ? "active" : ""}
+            >
+              Explore Ideas
             </Link>
           </li>
           <li>
-            <Link to="/budget-estimator" onClick={() => setNavbarState(false)}>
-              Budget Estimator
+            <Link
+              to="/budget-estimator"
+              onClick={() => handleLinkClick("/budget-estimator")}
+              className={activeLink === "/budget-estimator" ? "active" : ""}
+            >
+              Budget Tool
             </Link>
           </li>
           <li>
-            <Link to="/weather-forecast" onClick={() => setNavbarState(false)}>
-              Weather Forecast
+            <Link
+              to="/weather-forecast"
+              onClick={() => handleLinkClick("/weather-forecast")}
+              className={activeLink === "/weather-forecast" ? "active" : ""}
+            >
+              Weather
             </Link>
           </li>
         </ul>
-      </ResponsiveNav>
-    </>
+
+        {/* Mobile Menu Icon */}
+        <div className="mobile-menu-icon" onClick={toggleMenu}>
+          {mobileMenuOpen ? <VscChromeClose /> : <GiHamburgerMenu />}
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="mobile-menu">
+          <ul>
+            <li>
+              <Link
+                to="/"
+                onClick={() => handleLinkClick("/")}
+                className={activeLink === "/" ? "active" : ""}
+              >
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/itinerary-builder"
+                onClick={() => handleLinkClick("/itinerary-builder")}
+                className={activeLink === "/itinerary-builder" ? "active" : ""}
+              >
+                Plan Trip
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/packing-list"
+                onClick={() => handleLinkClick("/packing-list")}
+                className={activeLink === "/packing-list" ? "active" : ""}
+              >
+                Packing
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/travel-suggestions"
+                onClick={() => handleLinkClick("/travel-suggestions")}
+                className={activeLink === "/travel-suggestions" ? "active" : ""}
+              >
+                Explore Ideas
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/budget-estimator"
+                onClick={() => handleLinkClick("/budget-estimator")}
+                className={activeLink === "/budget-estimator" ? "active" : ""}
+              >
+                Budget Tool
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/weather-forecast"
+                onClick={() => handleLinkClick("/weather-forecast")}
+                className={activeLink === "/weather-forecast" ? "active" : ""}
+              >
+                Weather
+              </Link>
+            </li>
+          </ul>
+        </div>
+      )}
+    </nav>
   );
 };
 
 export default Navbar;
-
-const Nav = styled.nav`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  background-color: #f1faee; /* Changed navbar color to F1FAEE */
-  
-  .brand {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    
-    .container {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #243e36; /* Ocean Blue */
-    }
-    
-    .toggle {
-      display: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-  }
-  
-  .nav-links {
-    display: flex;
-    list-style: none;
-    gap: 1.5rem;
-    
-    li {
-      a {
-        text-decoration: none;
-        color: #243e36; /* Ocean Blue */
-        font-size: 1rem;
-        font-weight: 500;
-        transition: color 0.3s, transform 0.2s ease;
-        
-        &:hover {
-          color: #156064; /* Seafoam Green */
-          transform: scale(1.1);
-        }
-      }
-    }
-  }
-
-  button {
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    font-weight: bold;
-    color: white;
-    background-color: #48cae4; /* Light blue */
-    border: none; /* Removed border */
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    
-    &:hover {
-      background-color: #023e8a; /* Darker blue on hover */
-    }
-  }
-  
-  @media screen and (max-width: 768px) {
-    .nav-links {
-      display: none;
-    }
-    .brand .toggle {
-      display: block;
-    }
-    button {
-      display: none;
-    }
-  }
-`;
-
-const ResponsiveNav = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: white;
-  position: absolute;
-  top: ${({ state }) => (state ? "60px" : "-300px")};
-  width: 100%;
-  height: 30vh;
-  transition: all 0.3s ease;
-  z-index: 10;
-  
-  ul {
-    list-style: none;
-    
-    li {
-      margin: 0.5rem 0;
-      
-      a {
-        text-decoration: none;
-        font-size: 1.2rem;
-        color: #243e36; /* Ocean Blue */
-        
-        &:hover {
-          color: #7ca982; /* Seafoam Green */
-        }
-      }
-    }
-  }
-`;
