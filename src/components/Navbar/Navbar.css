@@ -23,13 +23,17 @@ body {
   margin: 0 auto;
   width: 100%;
 }
+/* Importing Sevillana font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Sevillana&display=swap');
 
-.navbar-logo a {
-  text-decoration: none;
-  font-size: 1.8rem;
+/* Applying the Sevillana font to the logo */
+.navbar-logo {
+  font-family: 'Sevillana', sans-serif;
+  font-size: 2rem;
   font-weight: bold;
   color: #243e36;
-}
+  text-decoration: none;
+} 
 
 .navbar-links {
   display: flex;

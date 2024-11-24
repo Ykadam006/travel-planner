@@ -2,27 +2,33 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { VscChromeClose } from "react-icons/vsc";
+import TypingEffect from 'react-typing-effect';  // Importing the typing effect component
 import "./Navbar.css";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeLink, setActiveLink] = useState("/"); // State to track the active link
+  const [activeLink, setActiveLink] = useState("/");
 
   const toggleMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
   const handleLinkClick = (link) => {
-    setActiveLink(link); // Set the clicked link as active
+    setActiveLink(link);
   };
 
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        {/* Logo */}
+        {/* Logo with Typing Effect */}
         <div className="navbar-logo">
           <Link to="/" onClick={() => handleLinkClick("/")}>
-            Ghumakkad
+            <TypingEffect
+              text="Ghumakkad"
+              speed={100}  // Typing speed (ms)
+              eraseDelay={2000}  // Time before erasing
+              typingDelay={500}  // Time before typing starts
+            />
           </Link>
         </div>
 
