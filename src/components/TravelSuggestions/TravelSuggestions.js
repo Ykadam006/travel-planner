@@ -63,7 +63,7 @@ const TravelSuggestions = () => {
   // Initially display the random suggestions
   React.useEffect(() => {
     setFilteredSuggestions(randomSuggestions);
-  }, []);
+}, [randomSuggestions]);
 
   return (
     <div className="travel-suggestions">
