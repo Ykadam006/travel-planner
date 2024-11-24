@@ -62,8 +62,10 @@ const TravelSuggestions = () => {
 
   // Initially display the random suggestions
   React.useEffect(() => {
+    // Set filtered suggestions on page load
     setFilteredSuggestions(randomSuggestions);
-}, [randomSuggestions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
 
   return (
     <div className="travel-suggestions">
