@@ -8,12 +8,12 @@
 }
 
 .weather-forecast.sunny {
-  background-color: #ffe066; /* Sunny background */
+  background-color: #f5e296; /* Sunny background */
   animation: fadeIn 2s ease-in-out;
 }
 
 .weather-forecast.rainy {
-  background-color: #80d0ff; /* Rainy background */
+  background-color: #c1e3f7; /* Rainy background */
   animation: fadeIn 2s ease-in-out;
 }
 

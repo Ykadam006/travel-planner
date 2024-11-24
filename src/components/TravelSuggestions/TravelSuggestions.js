@@ -36,36 +36,22 @@ const predefinedSuggestions = [
   { name: 'Mount Rushmore', category: 'Monument', address: 'South Dakota, USA', image: ' https://images.unsplash.com/photo-1529458202386-f91afb2705b8?q=80&w=3174&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D ' },
 ];
 
-
 const TravelSuggestions = () => {
   const [location, setLocation] = useState('');
-  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
-  let error = '';
-
-  // Randomly shuffle the predefined suggestions and select 10
-  const randomSuggestions = predefinedSuggestions
-    .sort(() => 0.5 - Math.random())
-    .slice(0, 8);
+  const [filteredSuggestions, setFilteredSuggestions] = useState(predefinedSuggestions);
 
   const filterSuggestions = (query) => {
     setLocation(query);
     if (query === '') {
-      setFilteredSuggestions(randomSuggestions);
+      setFilteredSuggestions(predefinedSuggestions);
     } else {
       setFilteredSuggestions(
-        randomSuggestions.filter((place) =>
+        predefinedSuggestions.filter((place) =>
           place.name.toLowerCase().includes(query.toLowerCase())
         )
       );
     }
   };
-
-  // Initially display the random suggestions
-  React.useEffect(() => {
-    // Set filtered suggestions on page load
-    setFilteredSuggestions(randomSuggestions);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-}, []);
 
   return (
     <div className="travel-suggestions">
@@ -79,10 +65,8 @@ const TravelSuggestions = () => {
         />
       </div>
 
-      {error && <div className="error">{error}</div>}
-
       <div className="cards-container">
-        {filteredSuggestions.length > 0 &&
+        {filteredSuggestions.length > 0 ? (
           filteredSuggestions.map((place, index) => (
             <div className="card" key={index}>
               <img
@@ -96,10 +80,13 @@ const TravelSuggestions = () => {
                 <p>{place.address}</p>
               </div>
             </div>
-          ))}
+          ))
+        ) : (
+          <p>No suggestions found.</p>
+        )}
       </div>
     </div>
   );
 };
 
-export default TravelSuggestions
+export default TravelSuggestions;
