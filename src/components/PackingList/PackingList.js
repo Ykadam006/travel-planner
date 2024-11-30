@@ -57,16 +57,15 @@ const predefinedLists = {
   "Retirement Celebration 🎉": ['Party Attire', 'Travel Ticket', 'Gift', 'Cards', 'Memory Book'],
   "Yoga on the Beach 🧘‍♂️": ['Yoga Mat', 'Swimsuit', 'Sunscreen', 'Hat', 'Sunglasses'],
 };
-
-
-
 const PackingList = () => {
   const [items, setItems] = useState([]);
   const [item, setItem] = useState('');
+  const [customLists, setCustomLists] = useState([]); // To store custom items added by the user
 
   const handleAdd = () => {
-    if (item) {
-      setItems([...items, { name: item, packed: false }]);
+    if (item.trim()) {
+      setItems([...items, { name: item.trim(), packed: false }]);
+      setCustomLists([...customLists, item.trim()]); // Add to custom lists
       setItem('');
     }
   };
@@ -79,40 +78,74 @@ const PackingList = () => {
   };
 
   const loadPredefinedList = (listName) => {
-    const predefinedItems = predefinedLists[listName].map((name) => ({ name, packed: false }));
+    const predefinedItems = predefinedLists[listName].map((name) => ({
+      name,
+      packed: false,
+    }));
     setItems(predefinedItems);
   };
 
   return (
     <div className="packing-list">
-      <h1>Your Packing List</h1>
+      <h1>Packing List Planner</h1>
+      <p>Plan and organize your trip essentials effortlessly! 🧳</p>
+
+      {/* Add Item Form */}
+      <div className="add-item-form">
+        <h2>Add Your Own Item</h2>
+        <div className="form">
+          <input
+            type="text"
+            placeholder="Enter an item"
+            value={item}
+            onChange={(e) => setItem(e.target.value)}
+          />
+          <button onClick={handleAdd}>Add</button>
+        </div>
+      </div>
+
+      {/* Predefined Lists */}
       <div className="predefined-lists">
-        {Object.keys(predefinedLists).map((listName) => (
-          <button
-            key={listName}
-            className="predefined-button"
-            onClick={() => loadPredefinedList(listName)}
-          >
-            {listName}
-          </button>
-        ))}
+        <h2>Predefined Lists</h2>
+        <div className="predefined-cards">
+          {/* Display predefined lists */}
+          {Object.keys(predefinedLists).map((listName) => (
+            <div
+              key={listName}
+              className="predefined-card"
+              onClick={() => loadPredefinedList(listName)}
+            >
+              <h3>{listName}</h3>
+              <p>{`${predefinedLists[listName].length} items`}</p>
+            </div>
+          ))}
+
+          {/* Display custom added items as separate cards */}
+          {customLists.map((customItem, index) => (
+            <div key={index} className="predefined-card">
+              <h3>{customItem}</h3>
+              <p>Custom Item</p>
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="form">
-        <input
-          type="text"
-          placeholder="Add an item"
-          value={item}
-          onChange={(e) => setItem(e.target.value)}
-        />
-        <button onClick={handleAdd}>Add Item</button>
+
+      {/* Packing List */}
+      <div className="list-container">
+        <h2>Your Packing List</h2>
+        <ul>
+          {items.map((i, index) => (
+            <li
+              key={index}
+              className={i.packed ? 'packed' : ''}
+              onClick={() => togglePacked(index)}
+            >
+              {i.name}
+            </li>
+          ))}
+        </ul>
+        {items.length === 0 && <p>No items found. Start packing! 🚀</p>}
       </div>
-      <ul>
-        {items.map((i, index) => (
-          <li key={index} className={i.packed ? 'packed' : ''}>
-            <span onClick={() => togglePacked(index)}>{i.name}</span>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 };

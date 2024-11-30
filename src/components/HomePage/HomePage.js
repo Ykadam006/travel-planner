@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import './HomePage.css';
+import React, { useState, useEffect } from "react";
+import "./HomePage.css";
 
 const HomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const heroImages = [
-    'https://images.unsplash.com/photo-1493988577905-2fa4018652be?q=80&w=2971&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    'https://images.unsplash.com/photo-1495819001850-6c67d73d1b1e?q=80&w=2967&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    'https://images.unsplash.com/photo-1499561385668-5ebdb06a79bc?q=80&w=2969&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    "https://images.unsplash.com/photo-1493988577905-2fa4018652be?q=80&w=2971&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1495819001850-6c67d73d1b1e?q=80&w=2967&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1499561385668-5ebdb06a79bc?q=80&w=2969&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   ];
 
   const recommendations = [
@@ -33,25 +33,34 @@ const HomePage = () => {
   ];
 
   const services = [
-    { icon: '🗺️', title: 'Itinerary Builder', description: 'Plan your trip day by day with ease.' },
-    { icon: '🧳', title: 'Packing List', description: 'Get a customized packing list for your destination.' },
-    { icon: '🌟', title: 'Travel Suggestions', description: 'Discover exciting destinations and activities.' },
-    { icon: '💰', title: 'Budget Estimator', description: 'Plan your trip within your budget efficiently.' },
-    { icon: '☀️', title: 'Weather Forecast', description: 'Stay updated with destination weather forecasts.' }
-  ];
-  
-  const testimonials = [
-    { name: 'Priya & Raj', testimonial: 'Ghumakkad made our honeymoon in Bali unforgettable! The itinerary was perfect!', rating: 5 },
-    { name: 'Sam & Laura', testimonial: 'Amazing trip to Paris. All the details were taken care of, making our experience seamless.', rating: 5 },
-    { name: 'John & Mary', testimonial: 'The team was fantastic! The local experiences in Tokyo were beyond what we imagined.', rating: 4 },
+    { icon: "🗺️", title: "Itinerary Builder", description: "Plan your trip day by day with ease." },
+    { icon: "🧳", title: "Packing List", description: "Get a customized packing list for your destination." },
+    { icon: "🌟", title: "Travel Suggestions", description: "Discover exciting destinations and activities." },
+    { icon: "💰", title: "Budget Estimator", description: "Plan your trip within your budget efficiently." },
+    { icon: "☀️", title: "Weather Forecast", description: "Stay updated with destination weather forecasts." },
   ];
 
-  const handleNextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % heroImages.length);
-  };
+  const testimonials = [
+    { name: "Ravi", testimonial: "The Itinerary Builder made my vacation stress-free. Every detail was perfect!", rating: 5 },
+    { name: "Sophia", testimonial: "Loved the Packing List tool—it saved me so much time and ensured I had everything I needed.", rating: 5 },
+    { name: "Michael", testimonial: "Budget Estimator helped us plan an affordable yet luxurious trip!", rating: 4 },
+    { name: "Nina", testimonial: "The travel suggestions feature gave me unique ideas for activities I never thought of!", rating: 5 },
+  ];
+
+  // Automatically cycle through hero images every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroImages.length);
+    }, 5000); // Change slide every 5 seconds
+    return () => clearInterval(interval);
+  }, [heroImages.length]);
 
   const handlePrevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + heroImages.length) % heroImages.length);
+  };
+
+  const handleNextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % heroImages.length);
   };
 
   return (
@@ -61,11 +70,15 @@ const HomePage = () => {
         <img src={heroImages[currentSlide]} alt="Travel Destination" className="hero-img" />
         <div className="hero-overlay">
           <h1>Explore the World with Ghumakkad</h1>
-          <p>__________________________________</p>
+          <p>Plan, Explore, and Travel Smart</p>
           <button className="cta-btn">Plan Your Trip</button>
           <div className="slide-controls">
-            <button className="prev-btn" onClick={handlePrevSlide}>❮</button>
-            <button className="next-btn" onClick={handleNextSlide}>❯</button>
+            <button className="prev-btn" onClick={handlePrevSlide}>
+              ❮
+            </button>
+            <button className="next-btn" onClick={handleNextSlide}>
+              ❯
+            </button>
           </div>
         </div>
       </div>
@@ -106,7 +119,10 @@ const HomePage = () => {
             <div className="testimonial" key={index}>
               <p>"{testimonial.testimonial}"</p>
               <h4>- {testimonial.name}</h4>
-              <div className="rating">{"★".repeat(testimonial.rating)}{"☆".repeat(5 - testimonial.rating)}</div>
+              <div className="rating">
+                {"★".repeat(testimonial.rating)}
+                {"☆".repeat(5 - testimonial.rating)}
+              </div>
             </div>
           ))}
         </div>
