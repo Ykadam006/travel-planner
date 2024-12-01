@@ -62,7 +62,7 @@ button:hover {
 
 .predefined-cards {
   display: grid;
-  grid-template-columns: repeat(8, 1fr); /* Display 8 cards per row */
+  grid-template-columns: repeat(5, 1fr); /* Display 8 cards per row */
   gap: 15px;
   margin: 20px 0;
 }
@@ -119,4 +119,22 @@ li:hover {
 li.packed {
   text-decoration: line-through;
   color: #7CA982;
+}
+.load-more {
+  padding: 10px 20px;
+  background-color: #7CA982;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 1em;
+  cursor: pointer;
+  margin-top: 20px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  transition: background-color 0.3s;
+}
+
+.load-more:hover {
+  background-color: #5C8B64;
 }

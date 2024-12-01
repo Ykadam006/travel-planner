@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import './PackingList.css';
 
 const predefinedLists = {
@@ -60,12 +61,11 @@ const predefinedLists = {
 const PackingList = () => {
   const [items, setItems] = useState([]);
   const [item, setItem] = useState('');
-  const [customLists, setCustomLists] = useState([]); // To store custom items added by the user
+  const [showMore, setShowMore] = useState(false); // Track whether to show more lists
 
   const handleAdd = () => {
     if (item.trim()) {
       setItems([...items, { name: item.trim(), packed: false }]);
-      setCustomLists([...customLists, item.trim()]); // Add to custom lists
       setItem('');
     }
   };
@@ -85,6 +85,11 @@ const PackingList = () => {
     setItems(predefinedItems);
   };
 
+  // Get the lists to show based on the showMore state
+  const listsToShow = showMore
+    ? Object.keys(predefinedLists)
+    : Object.keys(predefinedLists).slice(0, 5);
+
   return (
     <div className="packing-list">
       <h1>Packing List Planner</h1>
@@ -94,56 +99,80 @@ const PackingList = () => {
       <div className="add-item-form">
         <h2>Add Your Own Item</h2>
         <div className="form">
-          <input
+          <motion.input
             type="text"
             placeholder="Enter an item"
             value={item}
             onChange={(e) => setItem(e.target.value)}
+            whileFocus={{ scale: 1.05 }}
           />
-          <button onClick={handleAdd}>Add</button>
+          <motion.button
+            onClick={handleAdd}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Add
+          </motion.button>
         </div>
       </div>
 
       {/* Predefined Lists */}
       <div className="predefined-lists">
         <h2>Predefined Lists</h2>
-        <div className="predefined-cards">
-          {/* Display predefined lists */}
-          {Object.keys(predefinedLists).map((listName) => (
-            <div
+        <motion.div
+          className="predefined-cards"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          {listsToShow.map((listName) => (
+            <motion.div
               key={listName}
               className="predefined-card"
+              whileHover={{ scale: 1.05, backgroundColor: '#C9E0B6' }}
               onClick={() => loadPredefinedList(listName)}
             >
               <h3>{listName}</h3>
               <p>{`${predefinedLists[listName].length} items`}</p>
-            </div>
+            </motion.div>
           ))}
+        </motion.div>
 
-          {/* Display custom added items as separate cards */}
-          {customLists.map((customItem, index) => (
-            <div key={index} className="predefined-card">
-              <h3>{customItem}</h3>
-              <p>Custom Item</p>
-            </div>
-          ))}
-        </div>
+        {/* Load More / Load Less Button */}
+        {Object.keys(predefinedLists).length > 5 && (
+          <motion.button
+            className="load-more"
+            onClick={() => setShowMore(!showMore)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {showMore ? 'Load Less' : 'Load More'}
+          </motion.button>
+        )}
       </div>
 
       {/* Packing List */}
       <div className="list-container">
         <h2>Your Packing List</h2>
-        <ul>
+        <motion.ul
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
           {items.map((i, index) => (
-            <li
+            <motion.li
               key={index}
               className={i.packed ? 'packed' : ''}
               onClick={() => togglePacked(index)}
+              whileHover={{ scale: 1.05 }}
+              initial={{ x: -50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: index * 0.1 }}
             >
               {i.name}
-            </li>
+            </motion.li>
           ))}
-        </ul>
+        </motion.ul>
         {items.length === 0 && <p>No items found. Start packing! 🚀</p>}
       </div>
     </div>

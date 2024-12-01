@@ -59,7 +59,7 @@ const BudgetEstimator = () => {
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
-        <button onClick={handleAdd}>Add Expense</button>
+        <button onClick={handleAdd}>Add</button>
       </div>
       <ul className="expense-list">
         {expenses.map((expense, index) => (
