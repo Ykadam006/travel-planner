@@ -10,26 +10,26 @@ const HomePage = () => {
   ];
 
   const recommendations = [
-    { 
-        image: 'https://images.unsplash.com/photo-1715837484239-9e9b191a6bb6?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 
-        name: 'Tokyo', 
-        description: 'Explore vibrant culture and cuisine. 🍣🎏 Immerse yourself in the heart of Japan! 🇯🇵'
-      },
-      { 
-        image: 'https://images.unsplash.com/photo-1536152470836-b943b246224c?q=80&w=3000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 
-        name: 'Bali', 
-        description: 'A tropical paradise waiting for you. 🌴🌊 Unwind on stunning beaches and explore lush landscapes! 🌅'
-      },
-      { 
-        image: 'https://images.unsplash.com/photo-1509821361533-422c91a204f0?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 
-        name: 'Dubai', 
-        description: 'Luxury, adventure, and unforgettable experiences. 🏙️🛥️ Discover the magic of the desert and world-class shopping! 🏜️✨'
-      },
-      { 
-        image: 'https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 
-        name: 'Paris', 
-        description: 'The city of love and lights! 🗼💖 Stroll along the Seine, enjoy fine dining, and see iconic landmarks like the Eiffel Tower! 🥖🍷'
-      }
+    {
+      image: 'https://images.unsplash.com/photo-1715837484239-9e9b191a6bb6?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      name: 'Tokyo',
+      description: 'Explore vibrant culture and cuisine. 🍣🎏 Immerse yourself in the heart of Japan! 🇯🇵',
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1536152470836-b943b246224c?q=80&w=3000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      name: 'Bali',
+      description: 'A tropical paradise waiting for you. 🌴🌊 Unwind on stunning beaches and explore lush landscapes! 🌅',
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1509821361533-422c91a204f0?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      name: 'Dubai',
+      description: 'Luxury, adventure, and unforgettable experiences. 🏙️🛥️ Discover the magic of the desert and world-class shopping! 🏜️✨',
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      name: 'Paris',
+      description: 'The city of love and lights! 🗼💖 Stroll along the Seine, enjoy fine dining, and see iconic landmarks like the Eiffel Tower! 🥖🍷',
+    },
   ];
 
   const services = [
@@ -55,14 +55,6 @@ const HomePage = () => {
     return () => clearInterval(interval);
   }, [heroImages.length]);
 
-  const handlePrevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + heroImages.length) % heroImages.length);
-  };
-
-  const handleNextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % heroImages.length);
-  };
-
   return (
     <div className="homepage">
       {/* Hero Section */}
@@ -70,16 +62,6 @@ const HomePage = () => {
         <img src={heroImages[currentSlide]} alt="Travel Destination" className="hero-img" />
         <div className="hero-overlay">
           <h1>Explore the World with Ghumakkad</h1>
-          <p>Plan, Explore, and Travel Smart</p>
-          <button className="cta-btn">Plan Your Trip</button>
-          <div className="slide-controls">
-            <button className="prev-btn" onClick={handlePrevSlide}>
-              ❮
-            </button>
-            <button className="next-btn" onClick={handleNextSlide}>
-              ❯
-            </button>
-          </div>
         </div>
       </div>
 

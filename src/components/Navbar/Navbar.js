@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { VscChromeClose } from "react-icons/vsc";
-import TypingEffect from 'react-typing-effect';  // Importing the typing effect component
+
 import "./Navbar.css";
 
 const Navbar = () => {
@@ -20,14 +20,12 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        {/* Logo with Typing Effect */}
         <div className="navbar-logo">
           <Link to="/" onClick={() => handleLinkClick("/")}>
-            <TypingEffect
-              text="Ghumakkad"
-              speed={100}  // Typing speed (ms)
-              eraseDelay={2000}  // Time before erasing
-              typingDelay={500}  // Time before typing starts
+          <img 
+              src="./assets/logo.png" 
+              alt="Logo" 
+              className="navbar-logo-img"
             />
           </Link>
         </div>

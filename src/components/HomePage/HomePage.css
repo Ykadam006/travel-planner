@@ -39,40 +39,6 @@ body {
     margin-bottom: 10px;
   }
   
-  .hero p {
-    font-size: 1.5em;
-    margin-bottom: 20px;
-  }
-  
-  .cta-btn {
-    padding: 10px 20px;
-    font-size: 1.2em;
-    background-color: #ff6600;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .cta-btn:hover {
-    background-color: #e65c00;
-  }
-  
-  .slide-controls {
-    position: absolute;
-    top: 50%;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .prev-btn, .next-btn {
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-  }
-  
   /* Recommendations Section */
   .recommendations {
     padding: 50px 20px;
@@ -157,7 +123,7 @@ body {
     font-size: 1.5em;
   }
   
-  @media (max-width: 768px) {
+  @media (max-width: 1000px) {
     .hero-overlay h1 {
       font-size: 2em;
     }
