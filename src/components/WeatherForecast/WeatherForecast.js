@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './WeatherForecast.css';
-import { FaTemperatureHigh, FaWind, FaTint, FaCloudSun} from 'react-icons/fa';
+import { FaTemperatureHigh, FaWind, FaTint, FaCloudSun } from 'react-icons/fa';
 
 const WeatherForecast = () => {
   const [location, setLocation] = useState('');
@@ -10,70 +10,75 @@ const WeatherForecast = () => {
 
   const API_KEY = '8fd8ed51284e42978ea222605242311'; // Replace with your WeatherAPI key
 
-  // Function to fetch current weather data based on city
   const fetchWeatherData = (city) => {
     axios
       .get(`https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${city}`)
       .then((response) => {
-        setWeatherData(response.data); // Store weather data
-        setError(''); // Clear any previous error
+        setWeatherData(response.data);
+        setError('');
       })
       .catch(() => {
-        setError('Could not fetch weather data. Please try again.'); // Error handling
-        setWeatherData(null); // Reset weather data
+        setError('Could not fetch weather data. Please try again.');
+        setWeatherData(null);
       });
   };
 
-  // Function to handle search button click and fetch weather for entered location
   const handleSearch = () => {
     if (location.trim() === '') {
-      setError('Please enter a valid location'); // Validation for empty input
+      setError('Please enter a valid location');
       return;
     }
-    fetchWeatherData(location); // Fetch weather for the provided city
+    fetchWeatherData(location);
   };
 
-  // Weather condition-based animation class
-  const weatherConditionClass = weatherData
-    ? weatherData.current.condition.text.toLowerCase().replace(' ', '-')
-    : '';
+  // Get background image class based on the weather condition
+  const getWeatherBackgroundClass = () => {
+    if (!weatherData) return '';
+    const condition = weatherData.current.condition.text.toLowerCase();
+    if (condition.includes('sunny') || condition.includes('clear')) return 'sunny-bg';
+    if (condition.includes('rain') || condition.includes('showers')) return 'rainy-bg';
+    if (condition.includes('cloud') || condition.includes('overcast')) return 'cloudy-bg';
+    if (condition.includes('snow')) return 'snowy-bg';
+    return 'default-bg'; // Fallback class
+  };
 
   return (
-    <div className={`weather-forecast ${weatherConditionClass}`}>
+    <div className={`weather-forecast ${getWeatherBackgroundClass()}`}>
       <h1 className="weather-title">Weather Forecast</h1>
-      <input
-        type="text"
-        placeholder="Enter city"
-        value={location}
-        onChange={(e) => setLocation(e.target.value)} // Update location on input change
-        className="weather-input"
-      />
-      <button onClick={handleSearch} className="weather-button">
-        Get Weather
-      </button>
-      {error && <div className="error">{error}</div>} {/* Display error message if any */}
+      <div className="input-container">
+        <input
+          type="text"
+          placeholder="Enter city"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          className="weather-input"
+        />
+        <button onClick={handleSearch} className="weather-button">
+          Get Weather
+        </button>
+      </div>
+      {error && <div className="error">{error}</div>}
 
       {weatherData && (
         <div className="weather-info">
-          <h2 className="fade-in">{weatherData.location.name}</h2> {/* Display location name with fade-in */}
-          <div className="current-weather">
-            <h3>Current Weather</h3>
-            <p className="fade-in">
-              <FaTemperatureHigh /> {weatherData.current.temp_c}°C {/* Temperature */}
+          <h2>{weatherData.location.name}</h2>
+          <div className="weather-box">
+            <p>
+              <FaTemperatureHigh /> {weatherData.current.temp_c}°C
             </p>
-            <p className="fade-in">
-              <FaTint /> Humidity: {weatherData.current.humidity}% {/* Humidity */}
+            <p>
+              <FaTint /> Humidity: {weatherData.current.humidity}%
             </p>
-            <p className="fade-in">
-              <FaWind /> Wind: {weatherData.current.wind_kph} km/h {/* Wind speed */}
+            <p>
+              <FaWind /> Wind: {weatherData.current.wind_kph} km/h
             </p>
-            <p className="fade-in">
-              <FaCloudSun /> Feels Like: {weatherData.current.feelslike_c}°C {/* Feels Like Temperature */}
+            <p>
+              <FaCloudSun /> Feels Like: {weatherData.current.feelslike_c}°C
             </p>
-            <p className="fade-in">UV Index: {weatherData.current.uv}</p> {/* UV Index */}
-            <p className="fade-in">Pressure: {weatherData.current.pressure_mb} mb</p> {/* Pressure */}
-            <p className="fade-in">Wind Gust: {weatherData.current.gust_kph} km/h</p> {/* Wind Gust */}
-            <p>{weatherData.current.condition.text}</p> {/* Weather description */}
+            <p>UV Index: {weatherData.current.uv}</p>
+            <p>Pressure: {weatherData.current.pressure_mb} mb</p>
+            <p>Wind Gust: {weatherData.current.gust_kph} km/h</p>
+            <p>{weatherData.current.condition.text}</p>
           </div>
         </div>
       )}

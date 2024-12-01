@@ -1,52 +1,64 @@
-/* General styles for the weather container */
+/* General container styles */
 .weather-forecast {
-  padding: 20px;
+  height: 100vh; /* Full screen height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   font-family: 'Arial', sans-serif;
-  max-width: 900px;
-  margin: auto;
-  transition: background-color 0.5s ease; /* Smooth background transition */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: background 0.5s ease;
+  color: #fff;
 }
 
-.weather-forecast.sunny {
-  background-color: #f5e296; /* Sunny background */
-  animation: fadeIn 2s ease-in-out;
+/* Backgrounds for different weather conditions */
+.weather-forecast.sunny-bg {
+  background-image: url('https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeWlxd3E5MzdqaWY3N2ZmdzF5ZnltZXcza2Q1c3hkc3Jrb251ZnE3OCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/KV1s4kSJHaY3m/giphy.webp'); /* Replace with your sunny image URL */
 }
 
-.weather-forecast.rainy {
-  background-color: #c1e3f7; /* Rainy background */
-  animation: fadeIn 2s ease-in-out;
+.weather-forecast.rainy-bg {
+  background-image: url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZHowNGJqZGZiNzA0a2dybjc0azc5ZTJlb2wzMHp2MjNvd3Q3dTlxNSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/IuVFGSQZTd6TK/giphy.webp'); /* Replace with your rainy image URL */
 }
 
-.weather-forecast.cloudy {
-  background-color: #d3d3d3; /* Cloudy background */
-  animation: fadeIn 2s ease-in-out;
+.weather-forecast.cloudy-bg {
+  background-image: url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExc2d1b3VieG5paGd5Mm5qaG55ZjRqdTlwNnVzMHU5dDR0enh1NGN4byZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/VDGOdvmp1bpc3PcCry/giphy.webp'); /* Replace with your cloudy image URL */
 }
 
-/* Styling for the title */
-.weather-title {
-  text-align: center;
-  color: #243e36;
-  animation: fadeIn 2s ease-in-out;
+.weather-forecast.snowy-bg {
+  background-image: url('https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExeDg3ejllZ2gyazRrcHJ1YXBhbHlzZm16c2d4aWc3eTU3MW13MDFyMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Fh3ezinVpi4yk/giphy.webp'); /* Replace with your snowy image URL */
 }
 
-/* Styling for the input field */
+.weather-forecast.default-bg {
+  background-color: #243e36; /* Fallback background color */
+}
+
+/* Input field and button */
+.input-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
 .weather-input {
   margin-right: 10px;
-  padding: 8px;
+  padding: 10px;
   border: 1px solid #7ca982;
   border-radius: 4px;
-  transition: border-color 0.3s ease;
+  width: 200px;
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #243e36;
 }
 
-.weather-input:focus {
-  border-color: #5c8b64; /* Focused input border color */
+.weather-input::placeholder {
+  color: #7ca982;
 }
 
-/* Styling for the search button */
 .weather-button {
   background-color: #7ca982;
   color: white;
-  padding: 8px 12px;
+  padding: 10px 15px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -57,31 +69,37 @@
   background-color: #5c8b64;
 }
 
-/* Error message styling */
-.error {
-  color: red;
-  margin-top: 10px;
-}
-
-/* Styling for the weather information section */
-.weather-info {
-  margin-top: 20px;
-  animation: fadeIn 2s ease-in-out;
-}
-
-/* Styling for the current weather section */
-.current-weather {
-  padding: 10px;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  animation: fadeIn 1.5s ease-in-out;
-}
-
-/* Fade-in animation for the elements */
-.fade-in {
+/* Title and error message */
+.weather-title {
+  font-size: 36px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+  margin-bottom: 20px;
   animation: fadeIn 1s ease-in-out;
 }
 
+.error {
+  color: red;
+  text-shadow: none;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* Weather information styling */
+.weather-info {
+  text-align: center;
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.weather-info h2,
+.weather-info p {
+  margin: 10px 0;
+  font-size: 18px;
+}
+
+/* Animations */
 @keyframes fadeIn {
   0% {
     opacity: 0;
@@ -91,17 +109,13 @@
   }
 }
 
-/* Hover effects for weather data */
-.current-weather p:hover {
-  color: #5c8b64;
-  cursor: pointer;
-  transform: scale(1.1);
-  transition: transform 0.3s ease;
-}
-
-/* Adjust the layout for mobile responsiveness */
+/* Responsive Design */
 @media (max-width: 600px) {
-  .weather-info {
-    padding: 10px;
+  .weather-input {
+    width: 150px;
+  }
+
+  .weather-title {
+    font-size: 24px;
   }
 }
