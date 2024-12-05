@@ -1,7 +1,3 @@
-Here’s the final, combined `README.md` for your **Ghumakkad - Travel Planner** project, which includes a thorough explanation of the project, technologies, features, installation steps, and lessons learned. I’ve also integrated the code explanations in a concise way for better understanding.
-
----
-
 # **Ghumakkad - Travel Planner**
 
 ## **Project Overview**
