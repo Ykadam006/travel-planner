@@ -111,3 +111,31 @@ button:hover {
   transform: scale(1.02);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+.custom-itinerary-list {
+  margin-bottom: 20px;
+}
+
+.predefined-itineraries {
+  margin-top: 20px;
+}
+
+.itinerary-card {
+  position: relative;
+}
+
+/* Selected Itinerary Card */
+.itinerary-card.selected {
+  border: 2px solid #7CA982;
+  background-color: #E0EEC6;
+  pointer-events: none; /* Prevent clicking already selected cards */
+  opacity: 0.8;
+}
+/* Separator Line */
+.separator {
+  border: none;
+  border-top: 2px solid #7CA982; /* Match the color theme */
+  margin: 20px 0;
+  width: 100%; /* Adjust width for alignment */
+  align-self: center; /* Center the line */
+}

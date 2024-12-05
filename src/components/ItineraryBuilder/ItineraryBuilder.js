@@ -24,7 +24,6 @@ const predefinedItineraries = [
   { activity: 'Petra Adventure', date: '2024-12-28', image: 'https://images.unsplash.com/photo-1595937551125-aaeb22a42f56?q=80&w=3174&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
   { activity: 'Niagara Falls Tour', date: '2024-12-30', image: 'https://images.unsplash.com/photo-1619831619894-2580d80bfc1d?q=80&w=3174&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }
 ];
-
 const ItineraryBuilder = () => {
   const [itinerary, setItinerary] = useState([]);
   const [activity, setActivity] = useState('');
@@ -44,7 +43,9 @@ const ItineraryBuilder = () => {
   };
 
   const handleAddPredefined = (predefined) => {
-    setItinerary([...itinerary, predefined]);
+    if (!itinerary.some((item) => item.activity === predefined.activity && item.date === predefined.date)) {
+      setItinerary([...itinerary, predefined]);
+    }
   };
 
   return (
@@ -65,13 +66,32 @@ const ItineraryBuilder = () => {
         <button onClick={handleAdd}>Add Activity</button>
       </div>
 
+      <ul className="custom-itinerary-list">
+      <hr className="separator" />
+        <h2>Your Custom Itinerary</h2>
+        {itinerary.map((item, index) => (
+          <li key={index}>
+            <span>
+              {item.date} - {item.activity}
+            </span>
+            <button onClick={() => handleRemove(index)}>Remove</button>
+          </li>
+        ))}
+      </ul>
+
       <div className="predefined-itineraries">
+      <hr className="separator" />
         <h2>Popular Itineraries</h2>
         <div className="itinerary-grid">
           {predefinedItineraries.map((item, index) => (
             <div
               key={index}
-              className="itinerary-card"
+              className={`itinerary-card ${itinerary.some(
+                (i) => i.activity === item.activity && i.date === item.date
+              )
+                ? 'selected'
+                : ''
+              }`}
               onClick={() => handleAddPredefined(item)}
             >
               <img src={item.image} alt={item.activity} />
@@ -83,17 +103,6 @@ const ItineraryBuilder = () => {
           ))}
         </div>
       </div>
-
-      <ul className="custom-itinerary-list">
-        {itinerary.map((item, index) => (
-          <li key={index}>
-            <span>
-              {item.date} - {item.activity}
-            </span>
-            <button onClick={() => handleRemove(index)}>Remove</button>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 };
