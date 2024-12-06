@@ -8,7 +8,7 @@ const WeatherForecast = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [error, setError] = useState('');
 
-  const API_KEY = 'add'; 
+  const API_KEY = '8fd8ed51284e42978ea222605242311'; 
   const fetchWeatherData = (city) => {
     axios
       .get(`https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${city}`)
