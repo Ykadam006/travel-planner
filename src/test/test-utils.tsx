@@ -1,13 +1,16 @@
 import { ReactElement } from 'react';
 import { render, type RenderOptions } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import { MotionProvider } from '@/motion';
 
 function AllProviders({ children }: { children: React.ReactNode }) {
   return (
-    <MotionProvider>
-      <BrowserRouter>{children}</BrowserRouter>
-    </MotionProvider>
+    <ThemeProvider>
+      <MotionProvider>
+        <BrowserRouter>{children}</BrowserRouter>
+      </MotionProvider>
+    </ThemeProvider>
   );
 }
 
