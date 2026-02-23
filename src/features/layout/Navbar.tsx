@@ -18,16 +18,9 @@ const navLinks = [
   { to: '/weather-forecast', label: 'Weather' },
 ];
 
-export function Navbar() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+function NavLinks({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkClick?: () => void }) {
   const location = useLocation();
-  const reduceMotion = useReducedMotion();
-  const toggleMotion = useReducedMotionToggle();
-  const { theme, toggleTheme } = useTheme();
-
-  const toggleMenu = () => setMobileMenuOpen((prev) => !prev);
-
-  const NavLinks = ({ mobile = false }: { mobile?: boolean }) => (
+  return (
     <>
       {navLinks.map(({ to, label }) => {
         const isActive = location.pathname === to;
@@ -35,7 +28,7 @@ export function Navbar() {
           <li key={to}>
             <ViewTransitionNavLink
               to={to}
-              onClick={mobile ? toggleMenu : undefined}
+              onClick={mobile ? onLinkClick : undefined}
               className={cn(
                 'block px-3 py-2 rounded-md transition-colors motion-hover',
                 isActive
@@ -50,6 +43,15 @@ export function Navbar() {
       })}
     </>
   );
+}
+
+export function Navbar() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const reduceMotion = useReducedMotion();
+  const toggleMotion = useReducedMotionToggle();
+  const { theme, toggleTheme } = useTheme();
+
+  const toggleMenu = () => setMobileMenuOpen((prev) => !prev);
 
   return (
     <nav className="sticky top-0 z-40 border-b border-theme-border bg-theme-surface-subtle/95 backdrop-blur-sm">
@@ -60,7 +62,7 @@ export function Navbar() {
 
         {/* Desktop */}
         <ul className="hidden md:flex md:items-center md:gap-1">
-          <NavLinks />
+          <NavLinks onLinkClick={toggleMenu} />
         </ul>
 
         <div className="flex items-center gap-1">
@@ -127,7 +129,7 @@ export function Navbar() {
                 </button>
               </div>
               <ul className="flex flex-col gap-1 px-4 py-4">
-                <NavLinks mobile />
+                <NavLinks mobile onLinkClick={toggleMenu} />
               </ul>
             </motion.aside>
           </>

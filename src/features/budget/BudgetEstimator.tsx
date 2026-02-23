@@ -143,6 +143,7 @@ export function BudgetEstimator() {
 
   useEffect(() => {
     setAmounts(Object.fromEntries(CATEGORIES.map((cat, i) => [cat, bases[i] ?? 0])));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- bases derived from tripStyle
   }, [tripStyle]);
 
   useEffect(() => {

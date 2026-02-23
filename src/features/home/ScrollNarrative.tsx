@@ -171,7 +171,7 @@ export function ScrollNarrative() {
 
             {scene.content === 'timeline' && (
               <div className="mt-12 flex justify-center gap-2">
-                {[1, 2, 3, 4, 5].map((day, _d) => (
+                {[1, 2, 3, 4, 5].map((day) => (
                   <div
                     key={day}
                     className="h-2 flex-1 max-w-12 rounded-full bg-primary-200"

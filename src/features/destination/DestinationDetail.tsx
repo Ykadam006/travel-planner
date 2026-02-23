@@ -128,7 +128,7 @@ export function DestinationDetail() {
         .then((d) => setFetchedDest(d ?? null))
         .catch(() => setFetchedDest(null));
     } else {
-      setFetchedDest(null);
+      queueMicrotask(() => setFetchedDest(null));
     }
   }, [id, fromState, staticDest]);
 

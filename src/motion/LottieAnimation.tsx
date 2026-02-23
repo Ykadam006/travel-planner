@@ -20,19 +20,17 @@ export function LottieAnimation({
   ariaLabel,
 }: LottieAnimationProps) {
   const reduceMotion = useReducedMotion();
-  const [data, setData] = useState<object | null>(dataProp ?? null);
+  const [fetchedData, setFetchedData] = useState<object | null>(null);
 
   useEffect(() => {
-    if (dataProp) {
-      setData(dataProp);
-      return;
-    }
     if (!src) return;
     fetch(src)
       .then((r) => r.json())
-      .then(setData)
-      .catch(() => setData(null));
-  }, [dataProp, src]);
+      .then(setFetchedData)
+      .catch(() => setFetchedData(null));
+  }, [src]);
+
+  const data = dataProp ?? fetchedData;
 
   if (reduceMotion || !data) {
     return null;

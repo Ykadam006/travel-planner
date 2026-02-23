@@ -84,17 +84,20 @@ export function ItineraryMap({ items }: { items: MapItem[] }) {
   const [geocoded, setGeocoded] = useState<GeocodedItem[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const itemsKey = items.map((i) => `${i.id}:${i.activity}`).join(',');
   useEffect(() => {
     if (items.length === 0) {
-      setGeocoded([]);
-      setLoading(false);
+      queueMicrotask(() => {
+        setGeocoded([]);
+        setLoading(false);
+      });
       return;
     }
-    setLoading(true);
+    queueMicrotask(() => setLoading(true));
     geocodeItems(items)
       .then(setGeocoded)
       .finally(() => setLoading(false));
-  }, [items.map((i) => `${i.id}:${i.activity}`).join(',')]);
+  }, [itemsKey, items]);
 
   return (
     <div className="relative h-full w-full">

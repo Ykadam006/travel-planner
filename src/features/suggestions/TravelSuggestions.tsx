@@ -204,10 +204,10 @@ export function TravelSuggestions() {
 
   useEffect(() => {
     if (!debouncedQuery.trim()) {
-      setSearchResults([]);
+      queueMicrotask(() => setSearchResults([]));
       return;
     }
-    setSearching(true);
+    queueMicrotask(() => setSearching(true));
     searchDestinations(debouncedQuery)
       .then((dests) => setSearchResults(dests.map(toSuggestion)))
       .catch(() => setSearchResults([]))

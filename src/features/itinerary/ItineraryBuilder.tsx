@@ -258,6 +258,11 @@ function getPlaceName(r: NominatimResult): string {
   );
 }
 
+let activityIdCounter = 0;
+function nextActivityId() {
+  return `act-${++activityIdCounter}`;
+}
+
 export function ItineraryBuilder() {
   const [itinerary, setItinerary] = useState<ItineraryItem[]>([]);
   const [activity, setActivity] = useState('');
@@ -282,10 +287,10 @@ export function ItineraryBuilder() {
 
   useEffect(() => {
     if (!debouncedSearch || debouncedSearch.length < 2) {
-      setSearchResults([]);
+      queueMicrotask(() => setSearchResults([]));
       return;
     }
-    setSearching(true);
+    queueMicrotask(() => setSearching(true));
     searchPlaces(debouncedSearch, 6)
       .then(setSearchResults)
       .catch(() => setSearchResults([]))
@@ -295,7 +300,7 @@ export function ItineraryBuilder() {
   const handleSelectResult = (r: NominatimResult) => {
     const name = getPlaceName(r);
     const newItem: ItineraryItem = {
-      id: `act-${Date.now()}`,
+      id: nextActivityId(),
       activity: name,
       date: date || new Date().toISOString().slice(0, 10),
       time: time || undefined,
@@ -318,7 +323,7 @@ export function ItineraryBuilder() {
   const handleAdd = () => {
     if (activity && date) {
       const newItem: ItineraryItem = {
-        id: `act-${Date.now()}`,
+        id: nextActivityId(),
         activity,
         date,
         time: time || undefined,
