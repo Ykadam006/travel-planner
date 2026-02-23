@@ -1,0 +1,41 @@
+@import './theme/tokens.css';
+@import './theme/motion.css';
+@import './theme/recipes.css';
+@import './theme/ambient.css';
+@import './theme/view-transitions.css';
+@import './theme/reduced-motion.css';
+@import './theme/blueprint.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text-main);
+    @apply antialiased;
+    font-family:
+      'DM Sans',
+      system-ui,
+      -apple-system,
+      sans-serif;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 600;
+  }
+}
+
+/* App shell — uses theme tokens */
+.app-shell {
+  background: var(--bg);
+}

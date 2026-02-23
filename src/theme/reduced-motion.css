@@ -1,0 +1,32 @@
+/**
+ * Reduced motion support
+ * Respects OS setting: prefers-reduced-motion: reduce
+ * When .reduce-motion class on html, all motion is minimized.
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Skeleton respects reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .ghm-skeleton,
+  .ghm-skeleton--pulse {
+    animation: none !important;
+    opacity: 0.7;
+  }
+}

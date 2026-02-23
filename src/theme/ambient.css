@@ -1,0 +1,47 @@
+/**
+ * Ambient motion — slow, subtle, always visible.
+ * Not scroll-triggered. Respects reduced-motion.
+ */
+
+@keyframes gradient-drift {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Apply to hero overlays for subtle drift */
+.ambient-gradient-drift {
+  background-size: 200% 200%;
+  animation: gradient-drift 20s ease-in-out infinite alternate;
+}
+
+@keyframes float-chip {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes float-tag {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.float-tag {
+  animation: float-tag 4s ease-in-out infinite;
+}
+
+.float-chip {
+  animation: float-chip 5s ease-in-out infinite;
+}

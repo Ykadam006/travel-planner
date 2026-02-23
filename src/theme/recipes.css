@@ -1,0 +1,331 @@
+/**
+ * Motion Recipes — reusable patterns (MOTION-SPEC)
+ * Every page composed from recipes, not one-off animations.
+ */
+
+/* ═══════════════════════════════════════════════════════════════
+   ENTRY
+   ═══════════════════════════════════════════════════════════════ */
+
+.recipe-fade-up {
+  animation: recipe-fade-up var(--duration-ui) var(--ease-emphasized) forwards;
+}
+@keyframes recipe-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(var(--move-md));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.recipe-fade-in {
+  animation: recipe-fade-in var(--duration-ui) var(--ease-standard) forwards;
+}
+@keyframes recipe-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.recipe-stagger-in > * {
+  opacity: 0;
+  animation: recipe-fade-up var(--duration-ui) var(--ease-emphasized) forwards;
+}
+.recipe-stagger-in > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+.recipe-stagger-in > *:nth-child(2) {
+  animation-delay: 60ms;
+}
+.recipe-stagger-in > *:nth-child(3) {
+  animation-delay: 120ms;
+}
+.recipe-stagger-in > *:nth-child(4) {
+  animation-delay: 180ms;
+}
+.recipe-stagger-in > *:nth-child(5) {
+  animation-delay: 240ms;
+}
+.recipe-stagger-in > *:nth-child(6) {
+  animation-delay: 300ms;
+}
+.recipe-stagger-in > *:nth-child(7) {
+  animation-delay: 360ms;
+}
+.recipe-stagger-in > *:nth-child(8) {
+  animation-delay: 420ms;
+}
+.recipe-stagger-in > *:nth-child(n + 9) {
+  animation-delay: 480ms;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INTERACTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.recipe-lift-hover {
+  transition:
+    transform var(--motion-micro),
+    box-shadow var(--motion-micro);
+}
+.recipe-lift-hover:hover {
+  transform: translateY(calc(var(--move-sm) * -1));
+  box-shadow: var(--shadow-md);
+}
+
+.recipe-press-tap {
+  transition: transform var(--motion-micro);
+}
+.recipe-press-tap:active {
+  transform: scale(var(--scale-press));
+}
+
+.recipe-lift-press {
+  transition:
+    transform var(--motion-micro),
+    box-shadow var(--motion-micro);
+}
+.recipe-lift-press:hover {
+  transform: translateY(calc(var(--move-sm) * -1));
+  box-shadow: var(--shadow-md);
+}
+.recipe-lift-press:active {
+  transform: translateY(0) scale(var(--scale-press));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LAYOUT (FLIP / morph — use with Framer Motion LayoutGroup)
+   ═══════════════════════════════════════════════════════════════ */
+
+.recipe-layout-morph {
+  transition: transform var(--motion-ui);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   OVERLAYS
+   ═══════════════════════════════════════════════════════════════ */
+
+.recipe-modal-in {
+  animation: recipe-modal-in var(--duration-ui) var(--ease-emphasized) forwards;
+}
+@keyframes recipe-modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.recipe-drawer-slide {
+  animation: recipe-drawer-slide var(--duration-ui) var(--ease-emphasized) forwards;
+}
+@keyframes recipe-drawer-slide {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.recipe-backdrop-fade {
+  animation: recipe-backdrop-fade var(--duration-ui) var(--ease-standard) forwards;
+}
+@keyframes recipe-backdrop-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FEEDBACK
+   ═══════════════════════════════════════════════════════════════ */
+
+.recipe-success-pop {
+  animation: recipe-success-pop var(--duration-micro) var(--ease-emphasized);
+}
+@keyframes recipe-success-pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.recipe-error-shake {
+  animation: recipe-error-shake var(--duration-ui) var(--ease-standard);
+}
+@keyframes recipe-error-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+.recipe-toast-slide {
+  animation: recipe-toast-slide var(--duration-ui) var(--ease-emphasized) forwards;
+}
+@keyframes recipe-toast-slide {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.recipe-toast-slide-top {
+  animation: recipe-toast-slide-top var(--duration-ui) var(--ease-emphasized) forwards;
+}
+@keyframes recipe-toast-slide-top {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCROLL (apply via GSAP / useScrollTrigger)
+   ═══════════════════════════════════════════════════════════════ */
+
+.recipe-parallax-float {
+  will-change: transform;
+}
+.recipe-pin-scene {
+  will-change: transform;
+}
+.recipe-scrub-timeline {
+  will-change: transform;
+}
+
+/* Legacy aliases (backwards compat) */
+.recipe-fade-down {
+  animation: recipe-fade-down var(--duration-ui) var(--ease-emphasized) forwards;
+}
+@keyframes recipe-fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--move-md) * -1));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.recipe-lift-on-hover {
+  transition:
+    transform var(--motion-micro),
+    box-shadow var(--motion-micro);
+}
+.recipe-lift-on-hover:hover {
+  transform: translateY(calc(var(--move-sm) * -1));
+  box-shadow: var(--shadow-md);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   AMBIENT — CTA shimmer (very faint)
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes recipe-cta-shimmer {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.recipe-cta-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.recipe-cta-shimmer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 45%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.08) 55%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: recipe-cta-shimmer 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INTERACTION — ripple/ink-like feedback (subtle)
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes recipe-ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+.recipe-ripple {
+  position: relative;
+  overflow: hidden;
+}
+.recipe-ripple::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at center, rgba(0, 0, 0, 0.12) 0%, transparent 60%);
+  pointer-events: none;
+  transform: scale(0);
+}
+.recipe-ripple:active::after {
+  animation: recipe-ripple 0.5s ease-out forwards;
+}
+
+/* Dark buttons: light ripple */
+.recipe-ripple-dark::after {
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.25) 0%, transparent 60%);
+}

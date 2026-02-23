@@ -1,0 +1,54 @@
+/**
+ * Global motion blueprint — base styles for page checklist items.
+ */
+
+/* Hero/heading entrance */
+.blueprint-hero {
+  opacity: 0;
+  transform: translateY(var(--move-md));
+  animation: blueprint-hero-in var(--duration-ui) var(--ease-emphasized) 0.1s forwards;
+}
+@keyframes blueprint-hero-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Section reveal */
+.ghm-section-reveal {
+  opacity: 0;
+  transform: translateY(var(--move-sm));
+  transition:
+    opacity var(--duration-ui) var(--ease-emphasized),
+    transform var(--duration-ui) var(--ease-emphasized);
+}
+.ghm-section-reveal.ghm-section-reveal--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Card hover — uses recipe-lift-hover */
+.blueprint-card-hover {
+  transition:
+    transform var(--motion-micro),
+    box-shadow var(--motion-micro);
+}
+.blueprint-card-hover:hover {
+  transform: translateY(calc(var(--move-sm) * -1));
+  box-shadow: var(--shadow-md);
+}
+
+/* Primary CTA */
+.blueprint-cta {
+  transition:
+    transform var(--motion-micro),
+    box-shadow var(--motion-micro);
+}
+.blueprint-cta:active {
+  transform: scale(var(--scale-press));
+}
+.blueprint-cta:focus-visible {
+  outline: 2px solid var(--primary, #0b5fff);
+  outline-offset: 2px;
+}

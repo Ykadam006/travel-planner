@@ -1,0 +1,66 @@
+/**
+ * Ghumakkad Motion Design System
+ * Coastal Minimal Premium — light & dark themes.
+ */
+
+:root {
+  /* Spacing */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  /* Radius */
+  --radius-sm: 0.25rem;
+  --radius: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+
+  /* Light theme — surfaces & text */
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-subtle: #f1f5f9;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --border: #e2e8f0;
+
+  /* Light theme — brand & semantic */
+  --primary: #0b5fff;
+  --primary-hover: #094bd6;
+  --secondary: #14b8a6;
+  --accent: #ff4d6d;
+  --accent-glow: rgba(255, 77, 109, 0.12);
+  --success: #16a34a;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #38bdf8;
+
+  /* Gradient — use lightly */
+  --gradient-hero: linear-gradient(135deg, #0b5fff 0%, #14b8a6 100%);
+}
+
+/* Dark theme — Coastal Minimal Premium */
+.dark {
+  --bg: #0b1220;
+  --surface: #0f172a;
+  --surface-subtle: #111c33;
+  --text-main: #e5e7eb;
+  --text-muted: #94a3b8;
+  --border: #1f2a44;
+
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+  --secondary: #2dd4bf;
+  --accent: #fb7185;
+  --accent-glow: rgba(251, 113, 133, 0.12);
+}

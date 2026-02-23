@@ -1,0 +1,31 @@
+/**
+ * Ghumakkad Motion System (MOTION-SPEC)
+ * Prefer transform + opacity. Distances 8–24px. Scale max 1.02 / 0.98.
+ */
+
+.motion-press {
+  transition: transform var(--motion-micro);
+}
+.motion-press:active {
+  transform: scale(var(--scale-press));
+}
+
+.motion-hover {
+  transition:
+    transform var(--motion-micro),
+    box-shadow var(--motion-micro);
+}
+.motion-hover:hover {
+  transform: translateY(calc(var(--move-sm) * -1));
+  box-shadow: var(--shadow-md);
+}
+
+.motion-focus {
+  transition:
+    background-color var(--motion-micro),
+    color var(--motion-micro);
+}
+
+.motion-crossfade {
+  transition: opacity var(--motion-page);
+}

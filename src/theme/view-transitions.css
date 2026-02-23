@@ -1,0 +1,62 @@
+/**
+ * Layer A — View Transitions API (Navigation engine)
+ * Route mode: subtle (fast) vs cinematic (slower, dramatic).
+ * Controlled via data-route-transition on <html>.
+ */
+
+::view-transition-old(root) {
+  animation: vt-fade-out var(--duration-page) var(--ease-emphasized) forwards;
+}
+
+::view-transition-new(root) {
+  animation: vt-fade-slide-in var(--duration-page) var(--ease-emphasized) forwards;
+}
+
+/* Cinematic mode: longer duration + bigger slide */
+:root[data-route-transition='cinematic']::view-transition-old(root) {
+  animation: vt-fade-out 650ms var(--ease-emphasized) forwards;
+}
+
+:root[data-route-transition='cinematic']::view-transition-new(root) {
+  animation: vt-fade-slide-in-cinematic 650ms var(--ease-emphasized) forwards;
+}
+
+@keyframes vt-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes vt-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes vt-fade-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--move-sm));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes vt-fade-slide-in-cinematic {
+  from {
+    opacity: 0;
+    transform: translateY(var(--move-lg));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
