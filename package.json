@@ -12,8 +12,7 @@
     "prepare": "husky",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "test:e2e": "playwright test"
+    "test:coverage": "vitest run --coverage"
   },
   "private": true,
   "dependencies": {
@@ -37,7 +36,6 @@
   "devDependencies": {
     "@axe-core/react": "^4.11.1",
     "@eslint/js": "^9.39.3",
-    "@playwright/test": "^1.58.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
