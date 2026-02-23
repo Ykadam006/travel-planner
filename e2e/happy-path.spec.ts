@@ -12,22 +12,34 @@ test.describe('Happy path', () => {
     await expect(page.getByRole('heading', { name: /plan your itinerary/i })).toBeVisible();
     await expect(page.getByTestId('add-activity-btn')).toBeVisible();
 
-    // Navigate to Packing
-    await page.getByRole('link', { name: /packing/i }).click();
+    // Navigate to Packing (use nav link; footer also has a Packing link)
+    await page
+      .getByRole('navigation')
+      .getByRole('link', { name: /packing/i })
+      .click();
     await expect(page.getByRole('heading', { name: /packing list planner/i })).toBeVisible();
     await expect(page.getByTestId('generate-list-btn')).toBeVisible();
 
-    // Navigate to Budget
-    await page.getByRole('link', { name: /budget tool/i }).click();
+    // Navigate to Budget (use nav link; footer also has a Budget link)
+    await page
+      .getByRole('navigation')
+      .getByRole('link', { name: /budget tool/i })
+      .click();
     await expect(page.getByRole('heading', { name: /budget estimator/i })).toBeVisible();
 
-    // Navigate to Weather
-    await page.getByRole('link', { name: /weather/i }).click();
+    // Navigate to Weather (use nav link; footer also has a Weather link)
+    await page
+      .getByRole('navigation')
+      .getByRole('link', { name: /weather/i })
+      .click();
     await expect(page.getByRole('heading', { name: /weather forecast/i })).toBeVisible();
     await expect(page.getByTestId('weather-search-btn')).toBeVisible();
 
-    // Navigate to Travel Suggestions
-    await page.getByRole('link', { name: /explore ideas/i }).click();
+    // Navigate to Travel Suggestions (use nav link)
+    await page
+      .getByRole('navigation')
+      .getByRole('link', { name: /explore ideas/i })
+      .click();
     await expect(page.getByRole('heading', { name: /travel suggestions/i })).toBeVisible();
     await expect(page.getByTestId('destination-search')).toBeVisible();
   });
@@ -41,7 +53,8 @@ test.describe('Happy path', () => {
     await toggle.click();
     await expect(page.getByText('Menu')).toBeVisible();
 
-    await toggle.click();
+    // Close via overlay or close button (toggle is behind overlay when menu is open)
+    await page.getByRole('button', { name: /close menu/i }).click();
     await expect(page.getByText('Menu')).not.toBeVisible();
   });
 });
