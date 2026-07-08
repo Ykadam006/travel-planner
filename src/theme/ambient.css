@@ -45,3 +45,25 @@
 .float-chip {
   animation: float-chip 5s ease-in-out infinite;
 }
+
+/* Aurora light blobs — pre-blurred radial gradients, transform-only drift.
+   Global reduced-motion CSS freezes these automatically. */
+@keyframes aurora-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(4rem, -2.5rem) scale(1.15);
+  }
+}
+
+.ambient-aurora {
+  animation: aurora-drift 26s ease-in-out infinite;
+  will-change: transform;
+}
+
+.ambient-aurora-slow {
+  animation: aurora-drift 34s ease-in-out infinite reverse;
+  will-change: transform;
+}
