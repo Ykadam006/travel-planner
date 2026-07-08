@@ -12,14 +12,14 @@ A cinematic, motion-led travel planning app built with **React 18** and **Vite**
 - **Discovery** — debounced cached destination search (OpenStreetMap + Wikipedia), compare mode in an accessible Radix bottom sheet
 - **Data layer** — TanStack Query on top of a rate-limited (1 req/s Nominatim), localStorage-backed API cache
 - **Accessibility** — OS + in-app reduced-motion, focus-visible rings everywhere, focus-trapped dialogs, keyboard drag-and-drop; see the live `/accessibility` page
-- **No secrets in the bundle** — WeatherAPI key lives in a Netlify Function proxy (`/api/weather`)
+- **No secrets in the bundle** — Visual Crossing key lives in a Netlify Function proxy (`/api/weather`)
 
 ## Tech Stack
 
 - **Framework**: React 18 + Vite · React Router v6
 - **Styling**: Tailwind CSS + CSS-variable design tokens (light/dark)
 - **Motion**: Framer Motion (UI) · GSAP ScrollTrigger (scroll story) · View Transitions API (routes) · Lenis (smooth scroll)
-- **Data**: TanStack Query · Netlify Functions · WeatherAPI, Nominatim/OSM, Wikipedia/Wikimedia, OpenTripMap
+- **Data**: TanStack Query · Netlify Functions · Visual Crossing, Nominatim/OSM, Wikipedia/Wikimedia, OpenTripMap
 - **UI correctness**: Radix Dialog · dnd-kit · Chart.js · Leaflet
 - **Quality**: Vitest + Testing Library + MSW · Playwright E2E · Storybook · ESLint/Prettier/Husky
 
@@ -33,9 +33,9 @@ npm install
 
 Copy `.env.example` to `.env.local` and fill in your keys:
 
-- `WEATHERAPI_KEY` — **server-side secret**, set it in Netlify (Site settings → Environment variables). Used by the `netlify/functions/weather.mts` proxy so the key never ships to the browser.
+- `VISUALCROSSING_API_KEY` — **server-side secret**, set it in Netlify (Site settings → Environment variables). Used by the `netlify/functions/weather.mts` proxy so the key never ships to the browser.
 - `VITE_OPENTRIPMAP_API_KEY` — public free-tier key for "things to do nearby".
-- `VITE_WEATHERAPI_KEY` — optional, **local dev only**: lets plain `vite dev` call WeatherAPI directly without running `netlify dev`. Anything prefixed `VITE_` is bundled into public JS — never put a production secret here.
+- `VITE_VISUALCROSSING_API_KEY` — optional, **local dev only**: lets plain `vite dev` call Visual Crossing directly without running `netlify dev`. Anything prefixed `VITE_` is bundled into public JS — never put a production secret here.
 
 ### Development
 
@@ -57,7 +57,7 @@ npm run storybook    # component workshop → http://localhost:6006
 ## Project Structure
 
 ```
-netlify/functions/    # weather.mts — WeatherAPI proxy (key stays server-side)
+netlify/functions/    # weather.mts — Visual Crossing proxy (key stays server-side)
 e2e/                  # Playwright specs
 src/
 ├── components/

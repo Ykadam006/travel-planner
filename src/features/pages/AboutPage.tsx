@@ -16,7 +16,7 @@ export function AboutPage() {
           integrations: route-level view transitions, GSAP scroll storytelling, TanStack Query
           caching, and a token-driven design system with full dark mode.
         </p>
-        <p>Data powered by OpenStreetMap, Wikipedia, OpenWeather, and OpenTripMap.</p>
+        <p>Data powered by OpenStreetMap, Wikipedia, Visual Crossing, and OpenTripMap.</p>
       </InfoSection>
     </StaticPage>
   );

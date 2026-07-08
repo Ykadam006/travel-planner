@@ -3,9 +3,9 @@ import { StaticPage, InfoSection } from './StaticPage';
 const SOURCES = [
   {
     icon: '☀️',
-    name: 'WeatherAPI',
+    name: 'Visual Crossing',
     role: 'Weather forecasts and current conditions',
-    href: 'https://www.weatherapi.com/',
+    href: 'https://www.visualcrossing.com/weather-api/',
   },
   {
     icon: '🗺️',

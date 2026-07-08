@@ -124,7 +124,7 @@ export function Footer() {
         {/* Bottom line */}
         <div className="mt-6 flex flex-col gap-2 border-t border-theme-border pt-6 text-xs text-theme-text-muted sm:flex-row sm:items-center sm:justify-between">
           <span>© {new Date().getFullYear()} Ghumakkad</span>
-          <span>Data: OpenWeather, OpenStreetMap, Wikipedia, OpenTripMap</span>
+          <span>Data: Visual Crossing, OpenStreetMap, Wikipedia, OpenTripMap</span>
         </div>
         <p className="mt-2 text-xs text-theme-text-muted">
           Budget estimates are approximate. Third-party data may be delayed or inaccurate.

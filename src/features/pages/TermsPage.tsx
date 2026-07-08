@@ -12,8 +12,8 @@ export function TermsPage() {
       </InfoSection>
       <InfoSection icon="🌐" title="Third-party data">
         <p>
-          Data from third-party services (OpenWeather, OpenStreetMap, Wikipedia) is subject to their
-          terms. See{' '}
+          Data from third-party services (Visual Crossing, OpenStreetMap, Wikipedia) is subject to
+          their terms. See{' '}
           <ViewTransitionLink to="/data-sources" className="text-primary-600 hover:underline">
             Data Sources
           </ViewTransitionLink>{' '}

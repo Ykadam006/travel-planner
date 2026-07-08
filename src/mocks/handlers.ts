@@ -26,32 +26,38 @@ export const handlers = [
   }),
 
   // Weather is requested via the Netlify proxy path in app code and directly
-  // in dev — mock both so tests pass regardless of environment.
-  http.get(/(\/api\/weather|api\.weatherapi\.com\/v1\/forecast\.json)/, ({ request }) => {
-    const url = new URL(request.url);
-    const q = url.searchParams.get('q');
-    if (!q) return HttpResponse.json({ error: 'Missing q' }, { status: 400 });
-    return HttpResponse.json({
-      location: { name: q },
-      current: {
-        temp_c: 20,
-        feelslike_c: 19,
-        humidity: 60,
-        wind_kph: 15,
-        condition: { text: 'Partly cloudy', code: 1003, icon: '' },
-        uv: 5,
-        pressure_mb: 1013,
-        gust_kph: 20,
-      },
-      forecast: {
-        forecastday: [
+  // from Visual Crossing in dev — mock both, returning the raw Visual Crossing
+  // Timeline shape (the client adapter converts it to WeatherData).
+  http.get(
+    /(\/api\/weather|weather\.visualcrossing\.com\/VisualCrossingWebServices)/,
+    ({ request }) => {
+      const url = new URL(request.url);
+      const q = url.searchParams.get('q') ?? url.pathname.split('/timeline/')[1];
+      if (!q) return HttpResponse.json({ error: 'Missing q' }, { status: 400 });
+      return HttpResponse.json({
+        resolvedAddress: decodeURIComponent(q),
+        currentConditions: {
+          temp: 20,
+          feelslike: 19,
+          humidity: 60,
+          windspeed: 15,
+          windgust: 20,
+          pressure: 1013,
+          uvindex: 5,
+          conditions: 'Partly cloudy',
+          icon: 'partly-cloudy-day',
+        },
+        days: [
           {
-            date: '2024-12-01',
-            day: { maxtemp_c: 22, mintemp_c: 12, condition: { text: 'Sunny', code: 1000 } },
-            hour: [],
+            datetime: '2024-12-01',
+            tempmax: 22,
+            tempmin: 12,
+            conditions: 'Clear',
+            icon: 'clear-day',
+            hours: [],
           },
         ],
-      },
-    });
-  }),
+      });
+    }
+  ),
 ];

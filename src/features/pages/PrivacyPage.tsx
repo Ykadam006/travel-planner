@@ -11,8 +11,9 @@ export function PrivacyPage() {
       </InfoSection>
       <InfoSection icon="🔗" title="Third-party services">
         <p>
-          Third-party APIs (OpenWeather, OpenStreetMap, Wikipedia) may receive location or search
-          queries when you use their features. Please refer to their respective privacy policies.
+          Third-party APIs (Visual Crossing, OpenStreetMap, Wikipedia) may receive location or
+          search queries when you use their features. Please refer to their respective privacy
+          policies.
         </p>
       </InfoSection>
     </StaticPage>
