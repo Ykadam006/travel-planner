@@ -1,6 +1,8 @@
 import { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { MotionProvider } from '@/motion';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '@/lib/query';
+import { MotionProvider, RouteTransition, ScrollToTop } from '@/motion';
 import { RoutePageSkeleton } from '@/motion/RoutePageSkeleton';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ThemeProvider } from '@/contexts/ThemeContext';
@@ -54,37 +56,42 @@ const DataSourcesPage = lazy(() =>
 export default function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider>
-        <BrowserRouter>
-          <MotionProvider>
-            <div className="min-h-screen flex flex-col app-shell">
-              <Navbar />
-              <main className="flex-1" data-testid="main-content">
-                <Suspense fallback={<RoutePageSkeleton />}>
-                  <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/itinerary-builder" element={<ItineraryBuilder />} />
-                    <Route path="/packing-list" element={<PackingList />} />
-                    <Route path="/travel-suggestions" element={<TravelSuggestions />} />
-                    <Route path="/budget-estimator" element={<BudgetEstimator />} />
-                    <Route path="/weather-forecast" element={<WeatherForecast />} />
-                    <Route path="/destination/:id" element={<DestinationDetail />} />
-                    <Route path="/about" element={<AboutPage />} />
-                    <Route path="/privacy" element={<PrivacyPage />} />
-                    <Route path="/terms" element={<TermsPage />} />
-                    <Route path="/accessibility" element={<AccessibilityPage />} />
-                    <Route path="/help" element={<HelpPage />} />
-                    <Route path="/changelog" element={<ChangelogPage />} />
-                    <Route path="/data-sources" element={<DataSourcesPage />} />
-                    <Route path="*" element={<HomePage />} />
-                  </Routes>
-                </Suspense>
-              </main>
-              <Footer />
-            </div>
-          </MotionProvider>
-        </BrowserRouter>
-      </ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <BrowserRouter>
+            <MotionProvider>
+              <div className="min-h-screen flex flex-col app-shell">
+                <Navbar />
+                <ScrollToTop />
+                <main className="flex-1" data-testid="main-content">
+                  <Suspense fallback={<RoutePageSkeleton />}>
+                    <RouteTransition>
+                      <Routes>
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/itinerary-builder" element={<ItineraryBuilder />} />
+                        <Route path="/packing-list" element={<PackingList />} />
+                        <Route path="/travel-suggestions" element={<TravelSuggestions />} />
+                        <Route path="/budget-estimator" element={<BudgetEstimator />} />
+                        <Route path="/weather-forecast" element={<WeatherForecast />} />
+                        <Route path="/destination/:id" element={<DestinationDetail />} />
+                        <Route path="/about" element={<AboutPage />} />
+                        <Route path="/privacy" element={<PrivacyPage />} />
+                        <Route path="/terms" element={<TermsPage />} />
+                        <Route path="/accessibility" element={<AccessibilityPage />} />
+                        <Route path="/help" element={<HelpPage />} />
+                        <Route path="/changelog" element={<ChangelogPage />} />
+                        <Route path="/data-sources" element={<DataSourcesPage />} />
+                        <Route path="*" element={<HomePage />} />
+                      </Routes>
+                    </RouteTransition>
+                  </Suspense>
+                </main>
+                <Footer />
+              </div>
+            </MotionProvider>
+          </BrowserRouter>
+        </ThemeProvider>
+      </QueryClientProvider>
     </ErrorBoundary>
   );
 }

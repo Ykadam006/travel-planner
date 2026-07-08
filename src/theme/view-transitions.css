@@ -21,6 +21,19 @@
   animation: vt-fade-slide-in-cinematic 650ms var(--ease-emphasized) forwards;
 }
 
+/* Reduced motion: view transitions become instant swaps.
+   (JS also skips startViewTransition — this covers UA-initiated ones.) */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+:root.reduce-motion::view-transition-old(*),
+:root.reduce-motion::view-transition-new(*) {
+  animation: none !important;
+}
+
 @keyframes vt-fade-out {
   from {
     opacity: 1;

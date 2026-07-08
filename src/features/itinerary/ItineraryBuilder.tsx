@@ -1,12 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   DndContext,
+  DragOverlay,
   closestCenter,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
+  type DragStartEvent,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -110,15 +113,20 @@ function SortableActivityItem({
   item,
   onRemove,
   onEdit,
+  selected = false,
+  onSelect,
 }: {
   item: ItineraryItem;
   onRemove: () => void;
   onEdit: (activity: string) => void;
+  selected?: boolean;
+  onSelect?: () => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState(item.activity);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const nodeRef = useRef<HTMLLIElement | null>(null);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: item.id,
@@ -128,6 +136,13 @@ function SortableActivityItem({
     transform: CSS.Transform.toString(transform),
     transition,
   };
+
+  // Selected from the map → bring the card into view
+  useEffect(() => {
+    if (selected) {
+      nodeRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }, [selected]);
 
   const handleSave = () => {
     if (editValue.trim()) {
@@ -140,12 +155,24 @@ function SortableActivityItem({
 
   return (
     <motion.li
-      ref={setNodeRef}
+      ref={(el: HTMLLIElement | null) => {
+        setNodeRef(el);
+        nodeRef.current = el;
+      }}
       style={style}
       {...listItemAddRemove}
       layout
-      className={`flex flex-col overflow-hidden rounded-lg border border-theme-border bg-theme-surface shadow-sm ${
-        isDragging ? 'z-50 shadow-xl ring-2 ring-primary-300' : ''
+      onClick={(e) => {
+        // Ignore clicks on interactive children (buttons, inputs, drag handle)
+        if ((e.target as HTMLElement).closest('button, input')) return;
+        onSelect?.();
+      }}
+      className={`flex flex-col overflow-hidden rounded-lg border bg-theme-surface shadow-sm transition-[box-shadow,border-color] ${
+        isDragging
+          ? 'z-50 opacity-40'
+          : selected
+            ? 'border-primary-400 ring-2 ring-primary-200 shadow-md'
+            : 'border-theme-border'
       }`}
     >
       <div className="flex items-center justify-between p-4">
@@ -269,9 +296,9 @@ export function ItineraryBuilder() {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<NominatimResult[]>([]);
-  const [searching, setSearching] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [mapOpen, setMapOpen] = useState(false);
   const [, setTimelineBuilt] = useState(false);
@@ -285,17 +312,15 @@ export function ItineraryBuilder() {
   const grouped = groupByDate(itinerary);
   const currentDayItems = selectedDay ? (grouped.get(selectedDay) ?? []) : itinerary;
 
-  useEffect(() => {
-    if (!debouncedSearch || debouncedSearch.length < 2) {
-      queueMicrotask(() => setSearchResults([]));
-      return;
-    }
-    queueMicrotask(() => setSearching(true));
-    searchPlaces(debouncedSearch, 6)
-      .then(setSearchResults)
-      .catch(() => setSearchResults([]))
-      .finally(() => setSearching(false));
-  }, [debouncedSearch]);
+  const {
+    data: searchResults = [],
+    isFetching: searching,
+    isError: searchError,
+  } = useQuery({
+    queryKey: ['nominatim', debouncedSearch],
+    queryFn: () => searchPlaces(debouncedSearch, 6),
+    enabled: debouncedSearch.length >= 2,
+  });
 
   const handleSelectResult = (r: NominatimResult) => {
     const name = getPlaceName(r);
@@ -314,8 +339,8 @@ export function ItineraryBuilder() {
       )
     );
     setSearchQuery('');
-    setSearchResults([]);
     setActivity('');
+    setSelectedActivityId(newItem.id);
     if (!date) setDate(newItem.date);
     if (!selectedDay) setSelectedDay(newItem.date);
   };
@@ -348,7 +373,12 @@ export function ItineraryBuilder() {
     setItinerary(itinerary.map((i) => (i.id === id ? { ...i, activity } : i)));
   };
 
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveDragId(event.active.id as string);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
+    setActiveDragId(null);
     const { active, over } = event;
     if (!over || active.id === over.id) return;
     const ids = currentDayItems.map((i) => i.id);
@@ -396,8 +426,20 @@ export function ItineraryBuilder() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
+  const activeDragItem = activeDragId ? itinerary.find((i) => i.id === activeDragId) : null;
+
+  // Escape closes the mobile map slide-over
+  useEffect(() => {
+    if (!mapOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMapOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [mapOpen]);
+
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 md:px-6">
+    <div className="mx-auto max-w-7xl px-4 py-10 md:px-6">
       <PageHero
         title="Plan Your Itinerary"
         subtitle="Add activities and dates, or pick from popular itineraries."
@@ -412,163 +454,234 @@ export function ItineraryBuilder() {
         </motion.div>
       )}
 
-      {/* Form — Search destination + manual add */}
-      <Card variant="outlined" className="mb-8">
-        <div className="space-y-4">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search destination (city, landmark, address…)"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => setSearchFocused(true)}
-              onBlur={() => setTimeout(() => setSearchFocused(false), 180)}
-              className="w-full rounded-xl border border-theme-border bg-theme-surface px-4 py-3 text-theme-text-main shadow-sm placeholder:text-theme-text-muted focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-200"
-            />
-            {searching && (
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-theme-text-muted">
-                Searching…
-              </span>
-            )}
-            {searchFocused && searchResults.length > 0 && (
-              <ul className="absolute left-0 right-0 top-full z-20 mt-1 max-h-56 overflow-auto rounded-xl border border-theme-border bg-theme-surface py-2 shadow-lg">
-                {searchResults.map((r) => (
-                  <li key={r.place_id}>
-                    <button
-                      type="button"
-                      onClick={() => handleSelectResult(r)}
-                      className="flex w-full flex-col gap-0.5 px-4 py-2.5 text-left hover:bg-primary-50"
-                    >
-                      <span className="font-medium text-theme-text-main">{getPlaceName(r)}</span>
-                      <span className="truncate text-xs text-theme-text-muted">
-                        {r.display_name}
-                      </span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="rounded-lg border border-theme-border bg-theme-surface px-4 py-2.5 text-theme-text-main focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-200"
-            />
-            <input
-              type="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className="rounded-lg border border-theme-border bg-theme-surface px-4 py-2.5 text-theme-text-main focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-200"
-            />
-            <span className="hidden text-theme-text-muted sm:inline">or</span>
-            <input
-              type="text"
-              placeholder="Add custom activity"
-              value={activity}
-              onChange={(e) => setActivity(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-              className="flex-1 min-w-[160px] rounded-lg border border-theme-border bg-theme-surface px-4 py-2.5 text-theme-text-main focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-200"
-            />
-            <Button onClick={handleAdd} data-testid="add-activity-btn">
-              Add Activity
-            </Button>
-          </div>
-        </div>
-      </Card>
-
-      {/* Day tabs */}
-      {days.length > 0 && (
-        <div className="mb-6 flex gap-2 overflow-x-auto">
-          <button
-            onClick={() => {
-              if (selectedDay) {
-                const idx = days.indexOf(selectedDay);
-                setDayDirection(idx >= 0 ? -1 : 0);
-              }
-              prevDayRef.current = null;
-              setSelectedDay(null);
-            }}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-              !selectedDay
-                ? 'bg-accent-100 text-accent-700'
-                : 'bg-theme-surface-subtle text-theme-text-muted hover:bg-theme-surface'
-            }`}
-          >
-            All
-          </button>
-          {days.map((day) => (
-            <button
-              key={day}
-              onClick={() => {
-                const oldIdx = prevDayRef.current ? days.indexOf(prevDayRef.current) : -1;
-                const newIdx = days.indexOf(day);
-                setDayDirection(newIdx > oldIdx ? 1 : newIdx < oldIdx ? -1 : 0);
-                prevDayRef.current = day;
-                setSelectedDay(day);
-              }}
-              className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                selectedDay === day
-                  ? 'bg-accent-100 text-accent-700'
-                  : 'bg-theme-surface-subtle text-theme-text-muted hover:bg-theme-surface'
-              }`}
-            >
-              {day}
-            </button>
-          ))}
-          <Button size="sm" variant="outline" onClick={() => setMapOpen(true)}>
-            Map
-          </Button>
-        </div>
-      )}
-
-      {/* Custom itinerary */}
-      <section className="mb-10">
-        <h2 className="mb-4 text-xl font-semibold text-theme-text-main">Your Itinerary</h2>
-        {itinerary.length === 0 ? (
-          <EmptyState
-            icon="📋"
-            title="No activities yet"
-            description="Add activities manually, use Plan my day, or pick from popular itineraries below."
-          />
-        ) : (
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext
-              items={currentDayItems.map((i) => i.id)}
-              strategy={verticalListSortingStrategy}
-            >
-              <AnimatePresence mode="wait">
-                <motion.ul
-                  key={selectedDay ?? 'all'}
-                  initial={{ opacity: 0.6, x: dayDirection * 40 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0.6, x: -dayDirection * 40 }}
-                  transition={{ duration: 0.2, ease: 'easeOut' }}
-                  className="space-y-2"
-                >
-                  <AnimatePresence mode="popLayout">
-                    {currentDayItems.map((item) => (
-                      <SortableActivityItem
-                        key={item.id}
-                        item={item}
-                        onRemove={() => handleRemove(item.id)}
-                        onEdit={(act) => handleEdit(item.id, act)}
-                      />
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-start lg:gap-8">
+        <div className="min-w-0">
+          {/* Form — Search destination + manual add */}
+          <Card variant="outlined" className="mb-8">
+            <div className="space-y-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search destination (city, landmark, address…)"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setSearchFocused(true)}
+                  onBlur={() => setTimeout(() => setSearchFocused(false), 180)}
+                  className="w-full rounded-xl border border-theme-border bg-theme-surface px-4 py-3 text-theme-text-main shadow-sm placeholder:text-theme-text-muted focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                />
+                {searching && (
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-theme-text-muted">
+                    Searching…
+                  </span>
+                )}
+                {searchFocused && searchResults.length > 0 && (
+                  <ul className="absolute left-0 right-0 top-full z-20 mt-1 max-h-56 overflow-auto rounded-xl border border-theme-border bg-theme-surface py-2 shadow-lg">
+                    {searchResults.map((r) => (
+                      <li key={r.place_id}>
+                        <button
+                          type="button"
+                          onClick={() => handleSelectResult(r)}
+                          className="flex w-full flex-col gap-0.5 px-4 py-2.5 text-left hover:bg-primary-50 dark:hover:bg-primary-950/40"
+                        >
+                          <span className="font-medium text-theme-text-main">
+                            {getPlaceName(r)}
+                          </span>
+                          <span className="truncate text-xs text-theme-text-muted">
+                            {r.display_name}
+                          </span>
+                        </button>
+                      </li>
                     ))}
-                  </AnimatePresence>
-                </motion.ul>
-              </AnimatePresence>
-            </SortableContext>
-          </DndContext>
-        )}
-      </section>
+                  </ul>
+                )}
+                {searchFocused &&
+                  debouncedSearch.length >= 2 &&
+                  !searching &&
+                  searchResults.length === 0 && (
+                    <div className="absolute left-0 right-0 top-full z-20 mt-1 rounded-xl border border-theme-border bg-theme-surface px-4 py-3 text-sm text-theme-text-muted shadow-lg">
+                      {searchError
+                        ? 'Search is unavailable right now — try again in a moment.'
+                        : `No places found for “${debouncedSearch}”.`}
+                    </div>
+                  )}
+              </div>
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="rounded-lg border border-theme-border bg-theme-surface px-4 py-2.5 text-theme-text-main focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                />
+                <input
+                  type="time"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                  className="rounded-lg border border-theme-border bg-theme-surface px-4 py-2.5 text-theme-text-main focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                />
+                <span className="hidden text-theme-text-muted sm:inline">or</span>
+                <input
+                  type="text"
+                  placeholder="Add custom activity"
+                  value={activity}
+                  onChange={(e) => setActivity(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+                  className="flex-1 min-w-[160px] rounded-lg border border-theme-border bg-theme-surface px-4 py-2.5 text-theme-text-main focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                />
+                <Button onClick={handleAdd} data-testid="add-activity-btn">
+                  Add Activity
+                </Button>
+              </div>
+            </div>
+          </Card>
 
-      {/* Map panel */}
+          {/* Day tabs */}
+          {days.length > 0 && (
+            <div className="mb-6 flex gap-2 overflow-x-auto">
+              <button
+                onClick={() => {
+                  if (selectedDay) {
+                    const idx = days.indexOf(selectedDay);
+                    setDayDirection(idx >= 0 ? -1 : 0);
+                  }
+                  prevDayRef.current = null;
+                  setSelectedDay(null);
+                }}
+                className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                  !selectedDay
+                    ? 'bg-accent-100 text-accent-700'
+                    : 'bg-theme-surface-subtle text-theme-text-muted hover:bg-theme-surface'
+                }`}
+              >
+                All
+              </button>
+              {days.map((day) => (
+                <button
+                  key={day}
+                  onClick={() => {
+                    const oldIdx = prevDayRef.current ? days.indexOf(prevDayRef.current) : -1;
+                    const newIdx = days.indexOf(day);
+                    setDayDirection(newIdx > oldIdx ? 1 : newIdx < oldIdx ? -1 : 0);
+                    prevDayRef.current = day;
+                    setSelectedDay(day);
+                  }}
+                  className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                    selectedDay === day
+                      ? 'bg-accent-100 text-accent-700'
+                      : 'bg-theme-surface-subtle text-theme-text-muted hover:bg-theme-surface'
+                  }`}
+                >
+                  {day}
+                </button>
+              ))}
+              <Button
+                size="sm"
+                variant="outline"
+                className="lg:hidden"
+                onClick={() => setMapOpen(true)}
+              >
+                Map
+              </Button>
+            </div>
+          )}
+
+          {/* Custom itinerary */}
+          <section className="mb-10">
+            <h2 className="mb-4 text-xl font-semibold text-theme-text-main">Your Itinerary</h2>
+            {itinerary.length === 0 ? (
+              <EmptyState
+                icon="📋"
+                title="No activities yet"
+                description="Add activities manually, use Plan my day, or pick from popular itineraries below."
+              />
+            ) : (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                onDragCancel={() => setActiveDragId(null)}
+              >
+                <SortableContext
+                  items={currentDayItems.map((i) => i.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <AnimatePresence mode="wait">
+                    <motion.ul
+                      key={selectedDay ?? 'all'}
+                      initial={{ opacity: 0.6, x: dayDirection * 40 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0.6, x: -dayDirection * 40 }}
+                      transition={{ duration: 0.2, ease: 'easeOut' }}
+                      className="space-y-2"
+                    >
+                      <AnimatePresence mode="popLayout">
+                        {currentDayItems.map((item) => (
+                          <SortableActivityItem
+                            key={item.id}
+                            item={item}
+                            onRemove={() => handleRemove(item.id)}
+                            onEdit={(act) => handleEdit(item.id, act)}
+                            selected={selectedActivityId === item.id}
+                            onSelect={() => setSelectedActivityId(item.id)}
+                          />
+                        ))}
+                      </AnimatePresence>
+                    </motion.ul>
+                  </AnimatePresence>
+                </SortableContext>
+                {/* Lifted-card depth while dragging */}
+                <DragOverlay
+                  dropAnimation={{ duration: 200, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
+                >
+                  {activeDragItem ? (
+                    <div className="flex scale-[1.02] items-center justify-between rounded-lg border border-primary-300 bg-theme-surface p-4 shadow-floating ring-2 ring-primary-200">
+                      <div className="flex items-center gap-3">
+                        <span className="text-lg text-theme-text-muted" aria-hidden>
+                          ⋮⋮
+                        </span>
+                        <span className="font-medium text-theme-text-main">
+                          {activeDragItem.activity}
+                        </span>
+                      </div>
+                      {activeDragItem.time && (
+                        <span className="text-sm text-theme-text-muted">{activeDragItem.time}</span>
+                      )}
+                    </div>
+                  ) : null}
+                </DragOverlay>
+              </DndContext>
+            )}
+          </section>
+        </div>
+
+        {/* Desktop: persistent map panel, synced with the list */}
+        <aside className="hidden lg:sticky lg:top-20 lg:block">
+          <div className="overflow-hidden rounded-xl border border-theme-border bg-theme-surface shadow-md">
+            <div className="flex items-center justify-between border-b border-theme-border px-4 py-3">
+              <h3 className="font-semibold text-theme-text-main">Trip map</h3>
+              <span className="text-xs text-theme-text-muted">
+                Click a marker to focus its card
+              </span>
+            </div>
+            <div className="h-[calc(100vh-16rem)] min-h-[400px]">
+              <ItineraryMap
+                items={currentDayItems.map((i) => ({
+                  id: i.id,
+                  activity: i.activity,
+                  date: i.date,
+                  time: i.time,
+                  lat: i.lat,
+                  lon: i.lon,
+                }))}
+                selectedId={selectedActivityId ?? undefined}
+                onSelect={setSelectedActivityId}
+              />
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      {/* Mobile: map slide-over */}
       <AnimatePresence>
         {mapOpen && (
           <>
@@ -602,6 +715,8 @@ export function ItineraryBuilder() {
                     lat: i.lat,
                     lon: i.lon,
                   }))}
+                  selectedId={selectedActivityId ?? undefined}
+                  onSelect={setSelectedActivityId}
                 />
               </div>
             </motion.aside>

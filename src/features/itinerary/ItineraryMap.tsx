@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -11,6 +11,14 @@ const icon = L.icon({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
+});
+
+/* Selected marker — brand-colored pin, slightly larger */
+const selectedIcon = L.divIcon({
+  className: '',
+  html: `<svg viewBox="0 0 24 24" width="34" height="34" style="filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.4))"><path fill="#0b5fff" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`,
+  iconSize: [34, 34],
+  iconAnchor: [17, 32],
 });
 
 export interface MapItem {
@@ -80,9 +88,35 @@ function FitBounds({ items }: { items: GeocodedItem[] }) {
   return null;
 }
 
-export function ItineraryMap({ items }: { items: MapItem[] }) {
+/** Flies to the selected activity's marker when selection changes */
+function FlyToSelected({ items, selectedId }: { items: GeocodedItem[]; selectedId?: string }) {
+  const map = useMap();
+  useEffect(() => {
+    if (!selectedId) return;
+    const item = items.find((i) => i.id === selectedId);
+    if (!item) return;
+    const reduceMotion = document.documentElement.classList.contains('reduce-motion');
+    if (reduceMotion) {
+      map.setView([item.lat, item.lon], Math.max(map.getZoom(), 13));
+    } else {
+      map.flyTo([item.lat, item.lon], Math.max(map.getZoom(), 13), { duration: 0.8 });
+    }
+  }, [map, items, selectedId]);
+  return null;
+}
+
+interface ItineraryMapProps {
+  items: MapItem[];
+  /** Currently selected activity — its marker is highlighted and flown to */
+  selectedId?: string;
+  /** Marker click → select the matching activity card */
+  onSelect?: (id: string) => void;
+}
+
+export function ItineraryMap({ items, selectedId, onSelect }: ItineraryMapProps) {
   const [geocoded, setGeocoded] = useState<GeocodedItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const markerRefs = useRef(new Map<string, L.Marker>());
 
   const itemsKey = items.map((i) => `${i.id}:${i.activity}`).join(',');
   useEffect(() => {
@@ -98,6 +132,13 @@ export function ItineraryMap({ items }: { items: MapItem[] }) {
       .then(setGeocoded)
       .finally(() => setLoading(false));
   }, [itemsKey, items]);
+
+  // Open the selected marker's popup
+  useEffect(() => {
+    if (!selectedId) return;
+    const marker = markerRefs.current.get(selectedId);
+    marker?.openPopup();
+  }, [selectedId, geocoded]);
 
   return (
     <div className="relative h-full w-full">
@@ -119,8 +160,18 @@ export function ItineraryMap({ items }: { items: MapItem[] }) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {geocoded.length > 0 && <FitBounds items={geocoded} />}
+        <FlyToSelected items={geocoded} selectedId={selectedId} />
         {geocoded.map((item) => (
-          <Marker key={item.id} position={[item.lat, item.lon]} icon={icon}>
+          <Marker
+            key={item.id}
+            position={[item.lat, item.lon]}
+            icon={item.id === selectedId ? selectedIcon : icon}
+            ref={(m) => {
+              if (m) markerRefs.current.set(item.id, m);
+              else markerRefs.current.delete(item.id);
+            }}
+            eventHandlers={{ click: () => onSelect?.(item.id) }}
+          >
             <Popup>
               <div className="text-sm">
                 <p className="font-semibold">{item.activity}</p>

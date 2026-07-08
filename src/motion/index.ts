@@ -4,6 +4,9 @@ export { useMotion, useReducedMotion, useReducedMotionToggle } from './MotionCon
 export { LottieAnimation } from './LottieAnimation.tsx';
 export { ViewTransitionLink, ViewTransitionNavLink } from './ViewTransitionLink';
 export { SharedElementLink } from './SharedElementLink';
+export { navigateWithViewTransition, supportsViewTransitions } from './viewTransition';
+export { RouteTransition } from './RouteTransition';
+export { ScrollToTop } from './ScrollToTop';
 export { RoutePageSkeleton } from './RoutePageSkeleton';
 export { useScrollTrigger } from './useScrollTrigger';
 export * from './recipes';

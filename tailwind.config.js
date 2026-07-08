@@ -79,10 +79,19 @@ export default {
           bg: 'var(--bg)',
           surface: 'var(--surface)',
           'surface-subtle': 'var(--surface-subtle)',
+          'surface-elevated': 'var(--surface-elevated)',
           'text-main': 'var(--text-main)',
           'text-muted': 'var(--text-muted)',
           border: 'var(--border)',
         },
+      },
+      zIndex: {
+        base: 'var(--z-base)',
+        'sticky-nav': 'var(--z-sticky-nav)',
+        overlay: 'var(--z-overlay)',
+        modal: 'var(--z-modal)',
+        toast: 'var(--z-toast)',
+        command: 'var(--z-command)',
       },
       borderRadius: {
         sm: 'var(--radius-sm)',
@@ -97,6 +106,8 @@ export default {
         DEFAULT: 'var(--shadow)',
         md: 'var(--shadow-md)',
         lg: 'var(--shadow-lg)',
+        floating: 'var(--shadow-floating)',
+        glow: 'var(--shadow-glow)',
       },
       transitionDuration: {
         micro: 'var(--duration-micro)',

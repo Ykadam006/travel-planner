@@ -26,3 +26,26 @@ yarn-error.log*
 
 # IDE
 .idea
+.vscode/
+
+# AI assistants
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+.cursor/
+.cursorrules
+.cursorignore
+.windsurf/
+.windsurfrules
+.aider*
+.codeium/
+.continue/
+.gemini/
+GEMINI.md
+AGENTS.md
+.github/copilot-instructions.md
+
+# Test & docs artifacts
+storybook-static/
+playwright-report/
+test-results/

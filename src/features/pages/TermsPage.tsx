@@ -1,26 +1,25 @@
 import { ViewTransitionLink } from '@/motion';
-import { PageHero } from '@/components/PageHero';
+import { StaticPage, InfoSection } from './StaticPage';
 
 export function TermsPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-16 md:px-6">
-      <PageHero title="Terms of Use" subtitle="Last updated: Feb 2026" />
-      <div className="mt-8 space-y-4 text-theme-text-muted">
+    <StaticPage title="Terms of Use" subtitle="Last updated: Feb 2026">
+      <InfoSection icon="📄" title="Use as-is">
         <p>
           Ghumakkad is provided as-is for personal use. Budget estimates and weather forecasts are
           approximate and should not be relied upon for financial or travel decisions.
         </p>
+      </InfoSection>
+      <InfoSection icon="🌐" title="Third-party data">
         <p>
           Data from third-party services (OpenWeather, OpenStreetMap, Wikipedia) is subject to their
-          terms. See <ViewTransitionLink to="/data-sources">Data Sources</ViewTransitionLink> for
-          attributions.
+          terms. See{' '}
+          <ViewTransitionLink to="/data-sources" className="text-primary-600 hover:underline">
+            Data Sources
+          </ViewTransitionLink>{' '}
+          for attributions.
         </p>
-        <p>
-          <ViewTransitionLink to="/" className="text-primary-600 hover:underline">
-            ← Back to Home
-          </ViewTransitionLink>
-        </p>
-      </div>
-    </div>
+      </InfoSection>
+    </StaticPage>
   );
 }

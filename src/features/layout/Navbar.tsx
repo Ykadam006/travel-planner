@@ -20,6 +20,7 @@ const navLinks = [
 
 function NavLinks({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkClick?: () => void }) {
   const location = useLocation();
+  const reduceMotion = useReducedMotion();
   return (
     <>
       {navLinks.map(({ to, label }) => {
@@ -30,13 +31,25 @@ function NavLinks({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkCli
               to={to}
               onClick={mobile ? onLinkClick : undefined}
               className={cn(
-                'block px-3 py-2 rounded-md transition-colors motion-hover',
+                'relative block px-3 py-2 rounded-md transition-colors',
                 isActive
-                  ? 'bg-primary-100 text-primary-700 font-medium dark:bg-primary-900/40 dark:text-primary-300'
-                  : 'text-theme-text-muted hover:bg-theme-surface-subtle hover:text-theme-text-main'
+                  ? 'text-primary-700 font-medium dark:text-primary-300'
+                  : 'text-theme-text-muted hover:bg-theme-surface-subtle hover:text-theme-text-main',
+                mobile && isActive && 'bg-primary-100 dark:bg-primary-900/40'
               )}
             >
-              {label}
+              {/* Desktop: shared pill slides between links on route change */}
+              {isActive && !mobile && (
+                <motion.span
+                  layoutId="nav-active-pill"
+                  aria-hidden
+                  className="absolute inset-0 rounded-md bg-primary-100 dark:bg-primary-900/40"
+                  transition={
+                    reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 400, damping: 34 }
+                  }
+                />
+              )}
+              <span className="relative">{label}</span>
             </ViewTransitionNavLink>
           </li>
         );
@@ -54,7 +67,7 @@ export function Navbar() {
   const toggleMenu = () => setMobileMenuOpen((prev) => !prev);
 
   return (
-    <nav className="sticky top-0 z-40 border-b border-theme-border bg-theme-surface-subtle/95 backdrop-blur-sm">
+    <nav className="sticky top-0 z-sticky-nav border-b border-theme-border bg-theme-surface-subtle/95 backdrop-blur-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
         <ViewTransitionLink to="/" className="flex items-center gap-2.5">
           <span className="text-xl font-display font-semibold text-theme-text-main">Ghumakkad</span>
@@ -107,7 +120,7 @@ export function Navbar() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               onClick={toggleMenu}
-              className="fixed inset-0 z-[100] bg-black/30 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-overlay bg-black/30 backdrop-blur-sm md:hidden"
               aria-hidden
             />
             <motion.aside
@@ -115,7 +128,7 @@ export function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed right-0 top-0 z-[110] h-full w-72 max-w-[85vw] border-l border-theme-border bg-theme-surface-subtle shadow-xl backdrop-blur-md md:hidden"
+              className="fixed right-0 top-0 z-modal h-full w-72 max-w-[85vw] border-l border-theme-border bg-theme-surface-subtle shadow-xl backdrop-blur-md md:hidden"
             >
               <div className="flex items-center justify-between border-b border-theme-border px-4 py-3">
                 <span className="font-medium text-theme-text-main">Menu</span>

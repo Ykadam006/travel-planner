@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { SharedElementLink } from '@/motion';
 import { CursorParallaxCard } from '@/components/CursorParallaxCard';
-import { EmptyState } from '@/components/ui';
+import { Chip, Dialog, EmptyState, ErrorState, Input } from '@/components/ui';
 import { PageHero } from '@/components/PageHero';
-import { layoutMorph } from '@/motion';
 import { useDebounce } from '@/hooks/useDebounce';
 import { searchDestinations, type Destination } from '@/lib/api';
 
@@ -197,24 +197,21 @@ export function TravelSuggestions() {
   const [compareMode, setCompareMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showCompareFrame, setShowCompareFrame] = useState(false);
-  const [searchResults, setSearchResults] = useState<Suggestion[]>([]);
-  const [searching, setSearching] = useState(false);
 
-  const debouncedQuery = useDebounce(query, 450);
+  const debouncedQuery = useDebounce(query.trim(), 450);
 
-  useEffect(() => {
-    if (!debouncedQuery.trim()) {
-      queueMicrotask(() => setSearchResults([]));
-      return;
-    }
-    queueMicrotask(() => setSearching(true));
-    searchDestinations(debouncedQuery)
-      .then((dests) => setSearchResults(dests.map(toSuggestion)))
-      .catch(() => setSearchResults([]))
-      .finally(() => setSearching(false));
-  }, [debouncedQuery]);
+  const {
+    data: searchResults = [],
+    isFetching: searching,
+    isError: searchFailed,
+    refetch: retrySearch,
+  } = useQuery({
+    queryKey: ['destinations', debouncedQuery],
+    queryFn: async () => (await searchDestinations(debouncedQuery)).map(toSuggestion),
+    enabled: debouncedQuery.length > 0,
+  });
 
-  const useSearchResults = debouncedQuery.trim().length > 0;
+  const useSearchResults = debouncedQuery.length > 0;
   const baseSuggestions = useSearchResults ? searchResults : predefinedSuggestions;
 
   const filteredSuggestions = baseSuggestions.filter((place) => {
@@ -254,16 +251,27 @@ export function TravelSuggestions() {
 
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
           <div className="relative flex-1">
-            <input
+            <span
+              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-theme-text-muted"
+              aria-hidden
+            >
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor">
+                <circle cx="11" cy="11" r="7" strokeWidth="2" />
+                <path d="M21 21l-4.35-4.35" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </span>
+            <Input
               type="text"
               placeholder="Search for a city or place..."
               data-testid="destination-search"
+              aria-label="Search destinations"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full rounded-xl border border-theme-border bg-theme-surface px-4 py-3.5 text-theme-text-main shadow-sm placeholder:text-theme-text-muted focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-200"
+              className="py-3.5 pl-11"
             />
             {searching && (
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-theme-text-muted">
+              <span className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center gap-2 text-sm text-theme-text-muted">
+                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-theme-border border-t-primary-500" />
                 Searching…
               </span>
             )}
@@ -293,23 +301,20 @@ export function TravelSuggestions() {
         {!useSearchResults && (
           <motion.div layout className="mb-8 flex flex-wrap gap-2">
             {CATEGORIES.map((cat) => (
-              <motion.button
-                key={cat}
-                {...layoutMorph}
-                onClick={() => setCategory(cat)}
-                className={`rounded-lg px-4 py-2.5 text-sm font-medium transition-all ${
-                  category === cat
-                    ? 'bg-accent-100 text-accent-700 ring-2 ring-accent-200'
-                    : 'bg-theme-surface border border-theme-border text-theme-text-muted hover:bg-theme-surface-subtle'
-                }`}
-              >
+              <Chip key={cat} selected={category === cat} onClick={() => setCategory(cat)}>
                 {cat}
-              </motion.button>
+              </Chip>
             ))}
           </motion.div>
         )}
 
-        {useSearchResults && searchResults.length === 0 && !searching ? (
+        {useSearchResults && searchFailed && !searching ? (
+          <ErrorState
+            title="Search unavailable"
+            description="Destination search is having trouble right now."
+            onRetry={() => retrySearch()}
+          />
+        ) : useSearchResults && searchResults.length === 0 && !searching ? (
           <EmptyState
             icon="🔍"
             title="No results found"
@@ -361,59 +366,42 @@ export function TravelSuggestions() {
           </p>
         </div>
 
-        {/* Compare frame modal */}
-        <AnimatePresence>
-          {showCompareFrame && selectedPlaces.length > 0 && (
-            <>
+        {/* Compare sheet — Radix dialog: focus trap, Escape, scroll lock */}
+        <Dialog
+          open={showCompareFrame && selectedPlaces.length > 0}
+          onOpenChange={(open) => {
+            if (!open) closeCompareFrame();
+          }}
+          title="Compare destinations"
+          description={`${selectedPlaces.length} selected`}
+          variant="bottom"
+        >
+          <motion.div layout className="flex gap-6 overflow-x-auto pb-2">
+            {selectedPlaces.map((place) => (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={closeCompareFrame}
-                className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
-              />
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="fixed inset-4 z-50 flex flex-col overflow-hidden rounded-2xl border border-theme-border bg-theme-surface shadow-2xl md:inset-8"
+                key={place.id}
+                layout
+                layoutId={`compare-${place.id}`}
+                className="min-w-[280px] shrink-0 overflow-hidden rounded-xl border border-theme-border bg-theme-surface shadow-lg"
               >
-                <div className="flex items-center justify-between border-b border-theme-border p-4">
-                  <h3 className="text-lg font-semibold">Compare destinations</h3>
-                  <button
-                    type="button"
-                    onClick={closeCompareFrame}
-                    className="rounded-lg px-4 py-2 text-sm font-medium text-theme-text-muted hover:bg-theme-surface-subtle"
-                  >
-                    Close
-                  </button>
+                <img
+                  src={place.image}
+                  alt={place.name}
+                  width={560}
+                  height={320}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-40 w-full object-cover"
+                />
+                <div className="p-4">
+                  <h4 className="font-semibold">{place.name}</h4>
+                  <p className="text-sm text-theme-text-muted">{place.category}</p>
+                  <p className="mt-1 text-sm text-theme-text-muted">{place.address}</p>
                 </div>
-                <motion.div layout className="flex flex-1 gap-6 overflow-x-auto p-6">
-                  {selectedPlaces.map((place) => (
-                    <motion.div
-                      key={place.id}
-                      layout
-                      layoutId={`compare-${place.id}`}
-                      className="min-w-[280px] shrink-0 overflow-hidden rounded-xl border border-theme-border bg-theme-surface shadow-lg"
-                    >
-                      <img
-                        src={place.image}
-                        alt={place.name}
-                        className="h-40 w-full object-cover"
-                      />
-                      <div className="p-4">
-                        <h4 className="font-semibold">{place.name}</h4>
-                        <p className="text-sm text-theme-text-muted">{place.category}</p>
-                        <p className="mt-1 text-sm text-theme-text-muted">{place.address}</p>
-                      </div>
-                    </motion.div>
-                  ))}
-                </motion.div>
               </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+            ))}
+          </motion.div>
+        </Dialog>
       </div>
     </LayoutGroup>
   );

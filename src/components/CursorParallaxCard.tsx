@@ -2,7 +2,14 @@ import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useReducedMotion } from '@/motion';
 
-const PARALLAX_DEPTH = 8;
+const PARALLAX_DEPTH = 5;
+
+/** Tilt only makes sense with a real cursor — never on touch screens */
+function hasFinePointer(): boolean {
+  return (
+    typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches
+  );
+}
 
 interface CursorParallaxCardProps {
   children: React.ReactNode;
@@ -11,6 +18,7 @@ interface CursorParallaxCardProps {
 
 /**
  * Preview card that reacts to cursor — tiny parallax tilt.
+ * Desktop-only; inert under reduced motion and on touch devices.
  */
 export function CursorParallaxCard({ children, className }: CursorParallaxCardProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -18,7 +26,7 @@ export function CursorParallaxCard({ children, className }: CursorParallaxCardPr
   const reduceMotion = useReducedMotion();
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (reduceMotion || !ref.current) return;
+    if (reduceMotion || !ref.current || !hasFinePointer()) return;
     const rect = ref.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;

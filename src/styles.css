@@ -32,10 +32,66 @@
   h6 {
     font-family: 'Cormorant Garamond', Georgia, serif;
     font-weight: 600;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: var(--primary);
+    color: #fff;
+  }
+
+  /* Unified keyboard-only focus ring */
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+  :focus:not(:focus-visible) {
+    outline: none;
   }
 }
 
 /* App shell — uses theme tokens */
 .app-shell {
   background: var(--bg);
+}
+
+/* Budget sliders — filled track (set via --fill inline style) + tactile thumb */
+.ghm-slider {
+  background: linear-gradient(
+    to right,
+    var(--primary) var(--fill, 0%),
+    var(--surface-subtle) var(--fill, 0%)
+  );
+}
+.ghm-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 1.25rem;
+  width: 1.25rem;
+  border-radius: 9999px;
+  background: var(--surface);
+  border: 2.5px solid var(--primary);
+  box-shadow: var(--shadow-md);
+  cursor: grab;
+  transition: transform 0.15s var(--ease-standard, ease);
+}
+.ghm-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+.ghm-slider:active::-webkit-slider-thumb {
+  cursor: grabbing;
+  transform: scale(1.05);
+}
+.ghm-slider::-moz-range-thumb {
+  height: 1.25rem;
+  width: 1.25rem;
+  border-radius: 9999px;
+  background: var(--surface);
+  border: 2.5px solid var(--primary);
+  box-shadow: var(--shadow-md);
+  cursor: grab;
 }

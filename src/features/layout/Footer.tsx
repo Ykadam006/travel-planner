@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { ViewTransitionLink } from '@/motion';
 import { useReducedMotion, useReducedMotionToggle } from '@/motion';
 
-const VERSION = '0.3.0';
+const VERSION = '0.4.0';
 
 const productLinks = [
   { to: '/', label: 'Home' },
@@ -50,7 +51,13 @@ export function Footer() {
 
   return (
     <footer className="mt-auto border-t border-theme-border bg-theme-surface-subtle/95">
-      <div className="mx-auto max-w-7xl px-4 py-10 md:px-6">
+      <motion.div
+        className="mx-auto max-w-7xl px-4 py-10 md:px-6"
+        initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-40px' }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      >
         {/* Brand + links in one clean block */}
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
           <div>
@@ -122,7 +129,7 @@ export function Footer() {
         <p className="mt-2 text-xs text-theme-text-muted">
           Budget estimates are approximate. Third-party data may be delayed or inaccurate.
         </p>
-      </div>
+      </motion.div>
     </footer>
   );
 }

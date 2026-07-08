@@ -1,9 +1,24 @@
 import { Link, NavLink, useNavigate, type LinkProps, type NavLinkProps } from 'react-router-dom';
+import { navigateWithViewTransition } from './viewTransition';
 
-function supportsViewTransitions(): boolean {
-  if (typeof document === 'undefined') return false;
-  const d = document as Document & { startViewTransition?: (cb: () => void) => void };
-  return typeof d.startViewTransition === 'function';
+function useViewTransitionClick(
+  to: LinkProps['to'],
+  viewTransition: boolean,
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>
+) {
+  const navigate = useNavigate();
+
+  return (e: React.MouseEvent<HTMLAnchorElement>) => {
+    onClick?.(e);
+    if (e.defaultPrevented) return;
+    // Let modified clicks (new tab, etc.) behave natively
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    const href = e.currentTarget.getAttribute('href');
+    if (!href || href === window.location.pathname) return;
+    if (!viewTransition) return;
+    e.preventDefault();
+    navigateWithViewTransition(() => navigate(to));
+  };
 }
 
 /** Link with View Transitions API support for Apple-style page continuity */
@@ -13,23 +28,7 @@ export function ViewTransitionLink({
   to,
   ...props
 }: LinkProps & { viewTransition?: boolean }) {
-  const navigate = useNavigate();
-
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    onClick?.(e);
-    if (e.defaultPrevented) return;
-    const href = e.currentTarget.getAttribute('href');
-    if (!href || href === window.location.pathname) return;
-    if (viewTransition && supportsViewTransitions()) {
-      e.preventDefault();
-      (
-        document as Document & { startViewTransition: (cb: () => void) => void }
-      ).startViewTransition(() => {
-        navigate(to);
-      });
-    }
-  };
-
+  const handleClick = useViewTransitionClick(to, viewTransition, onClick);
   return <Link to={to} onClick={handleClick} {...props} />;
 }
 
@@ -40,22 +39,6 @@ export function ViewTransitionNavLink({
   to,
   ...props
 }: NavLinkProps & { viewTransition?: boolean }) {
-  const navigate = useNavigate();
-
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    onClick?.(e);
-    if (e.defaultPrevented) return;
-    const href = e.currentTarget.getAttribute('href');
-    if (!href || href === window.location.pathname) return;
-    if (viewTransition && supportsViewTransitions()) {
-      e.preventDefault();
-      (
-        document as Document & { startViewTransition: (cb: () => void) => void }
-      ).startViewTransition(() => {
-        navigate(to);
-      });
-    }
-  };
-
+  const handleClick = useViewTransitionClick(to, viewTransition, onClick);
   return <NavLink to={to} onClick={handleClick} {...props} />;
 }

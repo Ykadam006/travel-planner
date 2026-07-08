@@ -1,40 +1,12 @@
 import { useState } from 'react';
-import axios from 'axios';
+import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui';
+import { Button, Input, ErrorState, EmptyState } from '@/components/ui';
 import { PageHero } from '@/components/PageHero';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
 import { LottieAnimation } from '@/motion';
 import { staggerIn, staggerItem } from '@/motion';
-
-const API_KEY = '8fd8ed51284e42978ea222605242311';
-
-interface WeatherData {
-  location: { name: string };
-  current: {
-    temp_c: number;
-    feelslike_c: number;
-    humidity: number;
-    wind_kph: number;
-    condition: { text: string; code: number; icon: string };
-    uv: number;
-    pressure_mb: number;
-    gust_kph: number;
-  };
-  forecast?: {
-    forecastday: Array<{
-      date: string;
-      day: { maxtemp_c: number; mintemp_c: number; condition: { text: string; code: number } };
-      hour: Array<{
-        time: string;
-        temp_c: number;
-        condition: { text: string; code: number };
-        wind_kph: number;
-        humidity: number;
-      }>;
-    }>;
-  };
-}
+import { getWeatherForecast, type WeatherData } from '@/lib/api/weather';
 
 const LOTTIE_WEATHER: Record<number, string> = {
   1000: 'https://assets2.lottiefiles.com/packages/lf20_2lnxtqsa.json', // Clear
@@ -174,36 +146,35 @@ function HourlyModal({
 
 export function WeatherForecast() {
   const [location, setLocation] = useState('');
-  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [submittedCity, setSubmittedCity] = useState('');
+  const [validationError, setValidationError] = useState('');
   const [hourlyOpen, setHourlyOpen] = useState(false);
   const [hourlyDate, setHourlyDate] = useState('');
 
-  const fetchWeatherData = (city: string) => {
-    setLoading(true);
-    setError('');
-    axios
-      .get(
-        `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${encodeURIComponent(city)}&days=3`
-      )
-      .then((response) => {
-        setWeatherData(response.data);
-        setError('');
-      })
-      .catch(() => {
-        setError('Could not fetch weather data. Please try again.');
-        setWeatherData(null);
-      })
-      .finally(() => setLoading(false));
-  };
+  const {
+    data: weatherData,
+    isFetching: loading,
+    isError: fetchFailed,
+    refetch,
+  } = useQuery<WeatherData>({
+    queryKey: ['weather', submittedCity.toLowerCase()],
+    queryFn: () => getWeatherForecast(submittedCity, 3),
+    enabled: submittedCity.length > 0,
+    staleTime: 10 * 60 * 1000,
+  });
 
   const handleSearch = () => {
-    if (location.trim() === '') {
-      setError('Please enter a valid location');
+    const city = location.trim();
+    if (city === '') {
+      setValidationError('Please enter a valid location');
       return;
     }
-    fetchWeatherData(location);
+    setValidationError('');
+    if (city.toLowerCase() === submittedCity.toLowerCase()) {
+      refetch();
+    } else {
+      setSubmittedCity(city);
+    }
   };
 
   const openHourly = (date: string) => {
@@ -237,28 +208,37 @@ export function WeatherForecast() {
         />
 
         <div className="mb-6 flex flex-col gap-4 sm:flex-row">
-          <input
+          <Input
             type="text"
             placeholder="Enter city"
+            aria-label="City name"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            className="flex-1 rounded-md border border-theme-border px-4 py-2 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+            className="flex-1 py-2"
           />
           <Button onClick={handleSearch} disabled={loading} data-testid="weather-search-btn">
             {loading ? 'Loading…' : 'Get Weather'}
           </Button>
         </div>
 
-        {error && (
+        {validationError && (
           <div className="mb-6">
-            <FeedbackMessage type="error" message={error} />
+            <FeedbackMessage type="error" message={validationError} />
           </div>
         )}
 
         <AnimatePresence mode="wait">
           {loading ? (
             <WeatherSkeleton key="skeleton" />
+          ) : fetchFailed ? (
+            <ErrorState
+              key="error"
+              icon="🌫️"
+              title="Could not fetch weather"
+              description={`We couldn't get the forecast for “${submittedCity}”. Check the city name or try again.`}
+              onRetry={() => refetch()}
+            />
           ) : weatherData ? (
             <motion.div
               key="content"
@@ -348,6 +328,13 @@ export function WeatherForecast() {
                 ))}
               </motion.div>
             </motion.div>
+          ) : submittedCity === '' ? (
+            <EmptyState
+              key="idle"
+              icon="🌤️"
+              title="Search a city"
+              description="Get current conditions and a 3-day forecast for any destination."
+            />
           ) : null}
         </AnimatePresence>
 

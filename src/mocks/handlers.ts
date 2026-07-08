@@ -2,7 +2,6 @@ import { http, HttpResponse } from 'msw';
 
 const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org';
 const WIKIPEDIA_BASE = 'https://en.wikipedia.org';
-const WEATHER_BASE = 'https://api.weatherapi.com';
 
 export const handlers = [
   http.get(`${NOMINATIM_BASE}/search`, () => {
@@ -26,7 +25,9 @@ export const handlers = [
     });
   }),
 
-  http.get(`${WEATHER_BASE}/v1/forecast.json`, ({ request }) => {
+  // Weather is requested via the Netlify proxy path in app code and directly
+  // in dev — mock both so tests pass regardless of environment.
+  http.get(/(\/api\/weather|api\.weatherapi\.com\/v1\/forecast\.json)/, ({ request }) => {
     const url = new URL(request.url);
     const q = url.searchParams.get('q');
     if (!q) return HttpResponse.json({ error: 'Missing q' }, { status: 400 });

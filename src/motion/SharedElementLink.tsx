@@ -1,11 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import type { LinkProps } from 'react-router-dom';
-
-function supportsViewTransitions(): boolean {
-  if (typeof document === 'undefined') return false;
-  const d = document as Document & { startViewTransition?: (cb: () => void) => void };
-  return typeof d.startViewTransition === 'function';
-}
+import { navigateWithViewTransition } from './viewTransition';
 
 export interface SharedElementLinkProps extends Omit<LinkProps, 'to'> {
   to: string | { pathname: string; state?: object };
@@ -18,7 +13,8 @@ export interface SharedElementLinkProps extends Omit<LinkProps, 'to'> {
 
 /**
  * Link with shared-element continuity — image + title morph into destination hero.
- * Call before navigate: set view-transition-name on the clicked card's image and title.
+ * Tags the clicked card's image/title with view-transition-name just before
+ * navigating, and clears it once the transition settles.
  */
 export function SharedElementLink({
   to,
@@ -35,28 +31,21 @@ export function SharedElementLink({
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     onClick?.(e);
     if (e.defaultPrevented) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     if (path === window.location.pathname) return;
 
     e.preventDefault();
 
-    if (supportsViewTransitions()) {
-      const target = e.currentTarget;
-      const img = target.querySelector('[data-shared-image]');
-      const title = target.querySelector('[data-shared-title]');
-      if (img instanceof HTMLElement) img.style.viewTransitionName = imageTransitionName;
-      if (title instanceof HTMLElement) title.style.viewTransitionName = titleTransitionName;
+    const target = e.currentTarget;
+    const img = target.querySelector('[data-shared-image]');
+    const title = target.querySelector('[data-shared-title]');
+    if (img instanceof HTMLElement) img.style.viewTransitionName = imageTransitionName;
+    if (title instanceof HTMLElement) title.style.viewTransitionName = titleTransitionName;
 
-      (document as Document & { startViewTransition: (cb: () => void) => void })
-        .startViewTransition(() => {
-          navigate(path, { state });
-        })
-        .finished.finally(() => {
-          if (img instanceof HTMLElement) img.style.viewTransitionName = '';
-          if (title instanceof HTMLElement) title.style.viewTransitionName = '';
-        });
-    } else {
-      navigate(path, { state });
-    }
+    navigateWithViewTransition(() => navigate(path, { state })).finally(() => {
+      if (img instanceof HTMLElement) img.style.viewTransitionName = '';
+      if (title instanceof HTMLElement) title.style.viewTransitionName = '';
+    });
   };
 
   return (

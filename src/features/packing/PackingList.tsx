@@ -1,4 +1,4 @@
-import { useState, useId } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui';
 import { EmptyState } from '@/components/ui';
@@ -153,8 +153,19 @@ function ProgressRing({ progress }: { progress: number }) {
   );
 }
 
+const STORAGE_KEY = 'ghm_packing';
+
+function loadSavedItems(): PackingItem[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as PackingItem[]) : [];
+  } catch {
+    return [];
+  }
+}
+
 export function PackingList() {
-  const [items, setItems] = useState<PackingItem[]>([]);
+  const [items, setItems] = useState<PackingItem[]>(loadSavedItems);
   const [item, setItem] = useState('');
   const [showAddInput, setShowAddInput] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
@@ -171,6 +182,16 @@ export function PackingList() {
 
   const packedCount = items.filter((i) => i.packed).length;
   const progress = items.length > 0 ? packedCount / items.length : 0;
+  const allPacked = items.length > 0 && packedCount === items.length;
+
+  // Persist across visits — Footer's "Start New Trip" clears this key
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch {
+      // storage full/unavailable — list still works for the session
+    }
+  }, [items]);
 
   const handleAdd = (name: string, category: Category = 'Accessories') => {
     if (!name.trim()) return;
@@ -271,12 +292,19 @@ export function PackingList() {
       {/* Progress + Generate */}
       <div className="mb-10 flex flex-wrap items-center gap-6">
         <div className="flex items-center gap-4">
-          <ProgressRing progress={progress} />
-          <div>
+          <div className="relative">
+            <ProgressRing progress={progress} />
+            <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-theme-text-main">
+              {Math.round(progress * 100)}%
+            </span>
+          </div>
+          <div aria-live="polite">
             <p className="text-lg font-semibold">
               {packedCount} / {items.length}
             </p>
-            <p className="text-sm text-theme-text-muted">items packed</p>
+            <p className="text-sm text-theme-text-muted">
+              {allPacked ? 'All packed — ready to go! ✈️' : 'items packed'}
+            </p>
           </div>
         </div>
         <Button
@@ -361,6 +389,7 @@ export function PackingList() {
                   key={cat}
                   layout
                   variants={staggerItem}
+                  aria-pressed={selectedCategory === cat}
                   onClick={() => setSelectedCategory(cat)}
                   className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                     selectedCategory === cat
@@ -479,9 +508,18 @@ function PackingItemRow({
   onToggle: () => void;
   onRemove: () => void;
 }) {
+  // Suggested items "drop into the bag" — taller fall with a slight tilt
+  const entrance = item.isSuggestion
+    ? {
+        ...listItemAddRemove,
+        initial: { opacity: 0, y: -28, rotate: -1.5 },
+        animate: { opacity: 1, y: 0, rotate: 0 },
+      }
+    : listItemAddRemove;
+
   return (
     <motion.li
-      {...listItemAddRemove}
+      {...entrance}
       variants={staggerItem}
       className={`flex cursor-pointer items-center gap-3 rounded-lg border p-4 recipe-press-tap ${
         item.packed

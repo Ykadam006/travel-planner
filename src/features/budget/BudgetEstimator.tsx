@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, ChartOptions } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import { PageHero } from '@/components/PageHero';
+import { useTheme } from '@/contexts/ThemeContext';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -130,6 +131,7 @@ export function BudgetEstimator() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const chartRef = useRef<HTMLDivElement>(null);
   const chartInView = useInView(chartRef, { once: true, margin: '-50px' });
+  const { theme } = useTheme();
 
   const bases = TRIP_STYLE_BASES[tripStyle];
   const values = CATEGORIES.map((cat, i) => amounts[cat] ?? bases[i] ?? 0);
@@ -179,7 +181,11 @@ export function BudgetEstimator() {
       legend: {
         display: true,
         position: 'bottom',
-        labels: { usePointStyle: true, padding: 12 },
+        labels: {
+          usePointStyle: true,
+          padding: 12,
+          color: theme === 'dark' ? '#94a3b8' : '#475569',
+        },
       },
       tooltip: {
         enabled: true,
@@ -213,254 +219,273 @@ export function BudgetEstimator() {
           subtitle="Plan your travel budget by category. Pick a style, tweak the sliders, and see your total."
         />
 
-        {/* Trip style + duration */}
-        <motion.section
-          className="mb-10"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <h3 className="mb-3 text-sm font-medium text-theme-text-muted">
-            How do you like to travel?
-          </h3>
-          <TripStyleSelector value={tripStyle} onChange={setTripStyle} />
-          <div className="mt-6 flex items-center gap-4">
-            <label className="text-sm font-medium text-theme-text-main">Trip length</label>
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                min={1}
-                max={365}
-                value={tripDays}
-                onChange={(e) =>
-                  setTripDays(Math.max(1, Math.min(365, parseInt(e.target.value, 10) || 1)))
-                }
-                className="w-20 rounded-lg border border-theme-border bg-theme-surface px-3 py-2 text-center font-medium text-theme-text-main focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-200"
-              />
-              <span className="text-sm text-theme-text-muted">days</span>
-            </div>
-          </div>
-        </motion.section>
-
-        {/* Sliders */}
-        <motion.section
-          className="mb-10"
-          layout
-          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <h3 className="mb-6 text-xl font-semibold text-theme-text-main">Customize your budget</h3>
-          <div className="space-y-6">
-            {CATEGORIES.map((cat, i) => (
-              <motion.div
-                key={cat}
-                layout
-                className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4"
-              >
-                <div className="w-36 shrink-0">
-                  <label className="block text-sm font-medium text-theme-text-main">{cat}</label>
-                  <p className="text-xs text-theme-text-muted">{CATEGORY_HINTS[cat]}</p>
-                </div>
-                <input
-                  type="range"
-                  min={0}
-                  max={(TRIP_STYLE_BASES[tripStyle]?.[i] ?? 1000) * 3}
-                  step={10}
-                  value={values[i] ?? 0}
-                  onChange={(e) => updateAmount(cat, parseFloat(e.target.value))}
-                  className="h-2 flex-1 cursor-pointer appearance-none rounded-full bg-theme-surface-subtle accent-primary-600"
-                />
-                <motion.span
-                  className="w-20 shrink-0 text-right font-mono text-sm font-medium"
-                  layout
-                >
-                  $<CountUp value={values[i] ?? 0} decimals={0} />
-                </motion.span>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
-
-        {/* Total + Compare toggle */}
-        <div className="mb-10 flex flex-wrap items-center justify-between gap-4">
-          <motion.div
-            className="rounded-xl border border-theme-border bg-theme-surface px-6 py-4 shadow-sm"
-            layout
-          >
-            <p className="text-sm text-theme-text-muted">Total budget</p>
-            <p className="text-2xl font-bold text-primary-600">
-              $<CountUp value={total} decimals={0} />
-            </p>
-            {tripDays > 1 && (
-              <p className="mt-1 text-sm text-theme-text-muted">
-                ≈ ${perDay.toLocaleString()} per day
-              </p>
-            )}
-          </motion.div>
-          <label className="flex cursor-pointer items-center gap-3">
-            <span className="text-sm text-theme-text-muted">Compare with another style</span>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={compareMode}
-              onClick={() => setCompareMode(!compareMode)}
-              className={`relative h-8 w-14 rounded-full transition-colors ${
-                compareMode ? 'bg-primary-600' : 'bg-theme-surface-subtle'
-              }`}
+        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start lg:gap-10">
+          <div className="min-w-0">
+            {/* Trip style + duration */}
+            <motion.section
+              className="mb-10"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             >
-              <motion.div
-                className="absolute top-1 h-6 w-6 rounded-full bg-white shadow"
-                animate={{ left: compareMode ? 32 : 4 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              />
-            </button>
-          </label>
-        </div>
+              <h3 className="mb-3 text-sm font-medium text-theme-text-muted">
+                How do you like to travel?
+              </h3>
+              <TripStyleSelector value={tripStyle} onChange={setTripStyle} />
+              <div className="mt-6 flex items-center gap-4">
+                <label className="text-sm font-medium text-theme-text-main">Trip length</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={1}
+                    max={365}
+                    value={tripDays}
+                    onChange={(e) =>
+                      setTripDays(Math.max(1, Math.min(365, parseInt(e.target.value, 10) || 1)))
+                    }
+                    className="w-20 rounded-lg border border-theme-border bg-theme-surface px-3 py-2 text-center font-medium text-theme-text-main focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                  />
+                  <span className="text-sm text-theme-text-muted">days</span>
+                </div>
+              </div>
+            </motion.section>
 
-        {/* Scenario compare: split view */}
-        <div ref={chartRef}>
-          <AnimatePresence mode="wait">
-            {compareMode ? (
-              <motion.div
-                key="compare"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="mb-10 grid gap-6 md:grid-cols-2"
-              >
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1, duration: 0.35 }}
-                  className="rounded-xl border border-theme-border bg-theme-surface p-6 shadow-sm"
-                >
-                  <h4 className="mb-1 font-semibold text-primary-700">
-                    {TRIP_STYLE_LABELS[tripStyle]}
-                  </h4>
-                  <p className="text-2xl font-bold">
-                    $<CountUp value={total} decimals={0} />
-                  </p>
-                  {tripDays > 1 && (
-                    <p className="text-sm text-theme-text-muted">
-                      ≈ ${perDay.toLocaleString()}/day
-                    </p>
-                  )}
-                  <div className="mt-4 h-40">
-                    <Pie data={chartData} options={chartOptions} />
-                  </div>
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.15, duration: 0.35 }}
-                  className="rounded-xl border border-theme-border bg-theme-surface p-6 shadow-sm"
-                >
-                  <div className="mb-1 flex items-center justify-between">
-                    <h4 className="font-semibold text-theme-text-main">Compare with</h4>
-                    <select
-                      value={compareStyle}
-                      onChange={(e) => setCompareStyle(e.target.value as TripStyle)}
-                      className="rounded-lg border border-theme-border bg-theme-surface px-3 py-2 text-sm text-theme-text-main focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-200"
+            {/* Sliders */}
+            <motion.section
+              className="mb-10"
+              layout
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <h3 className="mb-6 text-xl font-semibold text-theme-text-main">
+                Customize your budget
+              </h3>
+              <div className="space-y-6">
+                {CATEGORIES.map((cat, i) => (
+                  <motion.div
+                    key={cat}
+                    layout
+                    className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4"
+                  >
+                    <div className="w-36 shrink-0">
+                      <label className="block text-sm font-medium text-theme-text-main">
+                        {cat}
+                      </label>
+                      <p className="text-xs text-theme-text-muted">{CATEGORY_HINTS[cat]}</p>
+                    </div>
+                    <input
+                      type="range"
+                      min={0}
+                      max={(TRIP_STYLE_BASES[tripStyle]?.[i] ?? 1000) * 3}
+                      step={10}
+                      value={values[i] ?? 0}
+                      aria-label={`${cat} budget`}
+                      onChange={(e) => updateAmount(cat, parseFloat(e.target.value))}
+                      style={
+                        {
+                          '--fill': `${Math.round(((values[i] ?? 0) / ((TRIP_STYLE_BASES[tripStyle]?.[i] ?? 1000) * 3)) * 100)}%`,
+                        } as React.CSSProperties
+                      }
+                      className="ghm-slider h-2 flex-1 cursor-pointer appearance-none rounded-full"
+                    />
+                    <motion.span
+                      className="w-20 shrink-0 text-right font-mono text-sm font-medium"
+                      layout
                     >
-                      {(['budget', 'moderate', 'luxury', 'splurge'] as const)
-                        .filter((s) => s !== tripStyle)
-                        .map((s) => (
-                          <option key={s} value={s}>
-                            {TRIP_STYLE_LABELS[s]}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
-                  <p className="text-2xl font-bold text-theme-text-main">
-                    $<CountUp value={compareTotal} decimals={0} />
+                      $<CountUp value={values[i] ?? 0} decimals={0} />
+                    </motion.span>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.section>
+
+            {/* Category list with hover highlight */}
+            <motion.ul
+              className="mb-10 space-y-2"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                visible: { transition: { staggerChildren: 0.04 } },
+                hidden: {},
+              }}
+            >
+              {CATEGORIES.map((cat, i) => (
+                <motion.li
+                  key={cat}
+                  variants={{
+                    hidden: { opacity: 0, y: 8 },
+                    visible: { opacity: 1, y: 0 },
+                  }}
+                  onMouseEnter={() => setHoveredIndex(i)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                  className={`flex cursor-default justify-between rounded-lg border px-4 py-3 transition-colors ${
+                    hoveredIndex === i
+                      ? 'border-primary-300 bg-primary-50 dark:border-primary-800 dark:bg-primary-950/40'
+                      : 'border-theme-border bg-theme-surface'
+                  }`}
+                >
+                  <span className="font-medium">{cat}</span>
+                  <span className="font-mono font-medium">
+                    $<CountUp value={values[i] ?? 0} decimals={0} />
+                  </span>
+                </motion.li>
+              ))}
+            </motion.ul>
+          </div>
+
+          {/* Sticky summary aside */}
+          <aside className="lg:sticky lg:top-24">
+            {/* Total + Compare toggle */}
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+              <motion.div
+                className="rounded-xl border border-theme-border bg-theme-surface px-6 py-4 shadow-sm"
+                layout
+              >
+                <p className="text-sm text-theme-text-muted">Total budget</p>
+                <p className="text-2xl font-bold text-primary-600">
+                  $<CountUp value={total} decimals={0} />
+                </p>
+                {tripDays > 1 && (
+                  <p className="mt-1 text-sm text-theme-text-muted">
+                    ≈ ${perDay.toLocaleString()} per day
                   </p>
-                  {tripDays > 1 && (
-                    <p className="text-sm text-theme-text-muted">
-                      ≈ ${comparePerDay.toLocaleString()}/day
-                    </p>
-                  )}
-                  <div className="mt-4 h-40">
-                    <Pie
-                      data={{
-                        labels: [...CATEGORIES],
-                        datasets: [
-                          {
-                            data: compareValues as number[],
-                            backgroundColor: CHART_COLORS,
-                            borderWidth: 0,
-                          },
-                        ],
-                      }}
-                      options={{
-                        ...chartOptions,
-                        animation: { duration: 600 },
-                        plugins: {
-                          ...chartOptions.plugins,
-                          tooltip: {
-                            callbacks: {
-                              label: (ctx) => {
-                                const v = ctx.raw as number;
-                                const pct =
-                                  compareTotal > 0 ? ((v / compareTotal) * 100).toFixed(1) : '0';
-                                return `${ctx.label}: $${v.toLocaleString()} (${pct}%)`;
+                )}
+              </motion.div>
+              <label className="flex cursor-pointer items-center gap-3">
+                <span className="text-sm text-theme-text-muted">Compare with another style</span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={compareMode}
+                  onClick={() => setCompareMode(!compareMode)}
+                  className={`relative h-8 w-14 rounded-full transition-colors ${
+                    compareMode ? 'bg-primary-600' : 'bg-theme-surface-subtle'
+                  }`}
+                >
+                  <motion.div
+                    className="absolute top-1 h-6 w-6 rounded-full bg-white shadow"
+                    animate={{ left: compareMode ? 32 : 4 }}
+                    transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                  />
+                </button>
+              </label>
+            </div>
+
+            {/* Scenario compare: split view */}
+            <div ref={chartRef}>
+              <AnimatePresence mode="wait">
+                {compareMode ? (
+                  <motion.div
+                    key="compare"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="mb-10 grid gap-6"
+                  >
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1, duration: 0.35 }}
+                      className="rounded-xl border border-theme-border bg-theme-surface p-6 shadow-sm"
+                    >
+                      <h4 className="mb-1 font-semibold text-primary-700">
+                        {TRIP_STYLE_LABELS[tripStyle]}
+                      </h4>
+                      <p className="text-2xl font-bold">
+                        $<CountUp value={total} decimals={0} />
+                      </p>
+                      {tripDays > 1 && (
+                        <p className="text-sm text-theme-text-muted">
+                          ≈ ${perDay.toLocaleString()}/day
+                        </p>
+                      )}
+                      <div className="mt-4 h-40">
+                        <Pie data={chartData} options={chartOptions} />
+                      </div>
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.15, duration: 0.35 }}
+                      className="rounded-xl border border-theme-border bg-theme-surface p-6 shadow-sm"
+                    >
+                      <div className="mb-1 flex items-center justify-between">
+                        <h4 className="font-semibold text-theme-text-main">Compare with</h4>
+                        <select
+                          value={compareStyle}
+                          onChange={(e) => setCompareStyle(e.target.value as TripStyle)}
+                          className="rounded-lg border border-theme-border bg-theme-surface px-3 py-2 text-sm text-theme-text-main focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                        >
+                          {(['budget', 'moderate', 'luxury', 'splurge'] as const)
+                            .filter((s) => s !== tripStyle)
+                            .map((s) => (
+                              <option key={s} value={s}>
+                                {TRIP_STYLE_LABELS[s]}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                      <p className="text-2xl font-bold text-theme-text-main">
+                        $<CountUp value={compareTotal} decimals={0} />
+                      </p>
+                      {tripDays > 1 && (
+                        <p className="text-sm text-theme-text-muted">
+                          ≈ ${comparePerDay.toLocaleString()}/day
+                        </p>
+                      )}
+                      <div className="mt-4 h-40">
+                        <Pie
+                          data={{
+                            labels: [...CATEGORIES],
+                            datasets: [
+                              {
+                                data: compareValues as number[],
+                                backgroundColor: CHART_COLORS,
+                                borderWidth: 0,
+                              },
+                            ],
+                          }}
+                          options={{
+                            ...chartOptions,
+                            animation: { duration: 600 },
+                            plugins: {
+                              ...chartOptions.plugins,
+                              tooltip: {
+                                callbacks: {
+                                  label: (ctx) => {
+                                    const v = ctx.raw as number;
+                                    const pct =
+                                      compareTotal > 0
+                                        ? ((v / compareTotal) * 100).toFixed(1)
+                                        : '0';
+                                    return `${ctx.label}: $${v.toLocaleString()} (${pct}%)`;
+                                  },
+                                },
                               },
                             },
-                          },
-                        },
-                      }}
-                    />
-                  </div>
-                </motion.div>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="single"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="mx-auto mb-10 max-w-md rounded-xl border border-theme-border bg-theme-surface p-6 shadow-sm"
-              >
-                <h4 className="mb-4 font-semibold text-theme-text-main">Breakdown</h4>
-                <div className="h-64">
-                  <Pie data={chartData} options={chartOptions} />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                          }}
+                        />
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="single"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="mx-auto mb-10 max-w-md rounded-xl border border-theme-border bg-theme-surface p-6 shadow-sm"
+                  >
+                    <h4 className="mb-4 font-semibold text-theme-text-main">Breakdown</h4>
+                    <div className="h-64">
+                      <Pie data={chartData} options={chartOptions} />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </aside>
         </div>
-
-        {/* Category list with hover highlight */}
-        <motion.ul
-          className="space-y-2"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            visible: { transition: { staggerChildren: 0.04 } },
-            hidden: {},
-          }}
-        >
-          {CATEGORIES.map((cat, i) => (
-            <motion.li
-              key={cat}
-              variants={{
-                hidden: { opacity: 0, y: 8 },
-                visible: { opacity: 1, y: 0 },
-              }}
-              onMouseEnter={() => setHoveredIndex(i)}
-              onMouseLeave={() => setHoveredIndex(null)}
-              className={`flex cursor-default justify-between rounded-lg border px-4 py-3 transition-colors ${
-                hoveredIndex === i
-                  ? 'border-primary-300 bg-primary-50'
-                  : 'border-theme-border bg-theme-surface'
-              }`}
-            >
-              <span className="font-medium">{cat}</span>
-              <span className="font-mono font-medium">
-                $<CountUp value={values[i] ?? 0} decimals={0} />
-              </span>
-            </motion.li>
-          ))}
-        </motion.ul>
       </div>
     </motion.div>
   );
